@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>311</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Scanner</string>
+    </property>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>281</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QToolButton" name="btnStartscan">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>400</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(236, 236, 236);</string>
+    </property>
+    <property name="text">
+     <string>Start Service</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>80</y>
+      <width>311</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>ScanMode</string>
+    </property>
+    <widget class="QToolButton" name="btnBuW">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>30</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string comment="Black&amp;White Line Mode">Black&amp;White scan</string>
+     </property>
+     <property name="statusTip">
+      <string comment="Black&amp;White Line Mode"/>
+     </property>
+     <property name="text">
+      <string notr="true">lineart</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>images/blackuwhite.svg</normaloff>
+       <normalon>images/blackuwhite_activ.svg</normalon>images/blackuwhite.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btnGray">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>30</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Gray scan</string>
+     </property>
+     <property name="text">
+      <string notr="true">gray</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>grey.svg</normaloff>
+       <normalon>images/grey_activ.svg</normalon>grey.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btnColor">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>30</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Color scan</string>
+     </property>
+     <property name="text">
+      <string notr="true">color</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>images/color.svg</normaloff>
+       <normalon>images/color_activ.svg</normalon>images/color.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>300</y>
+      <width>131</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Resolution</string>
+    </property>
+    <widget class="QComboBox" name="resolutions">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>111</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">padding-left:3</string>
+     </property>
+     <property name="currentText">
+      <string notr="true"/>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+     <property name="modelColumn">
+      <number>0</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>160</y>
+      <width>311</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Scan Path</string>
+    </property>
+    <widget class="QLineEdit" name="scanpath">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>221</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Path to Scanned Images</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btnOpenDir">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>30</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>folder-pictures.svg</normaloff>
+       <normalon>images/folder-pictures.svg</normalon>folder-pictures.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="filename">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>221</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Enter file name</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>340</y>
+      <width>58</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Status</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusLed">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>330</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>images/led_red.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>313</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuCalibrate">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="actionCalibrate"/>
+   </widget>
+   <addaction name="menuCalibrate"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionScanFolder">
+   <property name="text">
+    <string>ScanFolder</string>
+   </property>
+  </action>
+  <action name="actionCalibrate">
+   <property name="text">
+    <string>Calibrate</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
