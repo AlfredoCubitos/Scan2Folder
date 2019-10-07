@@ -15,8 +15,8 @@ class ConfigWindow(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
-        self.ui.brigthnesSlider.sliderMoved.connect(self.brigthnesSlot)
-        self.ui.contrastSlider.sliderMoved.connect(self.contrastSlot)
+        self.ui.brigthnesSlider.valueChanged.connect(self.brigthnesSlot)
+        self.ui.contrastSlider.valueChanged.connect(self.contrastSlot)
 
         self.ui.brigthnessLcd.valueChanged.connect(self.setBrightSlider)
         self.ui.contrastLcd.valueChanged.connect(self.setContastSlider)

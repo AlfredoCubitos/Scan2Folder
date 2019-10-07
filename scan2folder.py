@@ -143,12 +143,12 @@ class MainWindow(QMainWindow):
 
     def scannerCheck(self):
         self.statusBar().showMessage("looking up for scanner ....")
-        
         while  self.is_dev:
     
             try:
                 #ToDo: check index from 
                 self.dev = sane.open(self.devices[0][0])
+                
                
             except:
                 print("no scanner connected, waiting...")
