@@ -38,6 +38,7 @@ The values are stored and used the next time you are scanning
 * The script is tested only with a HP CM1312 device
 * Only one (the first) scanner is usable
 * If the LED does not become green after the device is switched on, may be your device is not supported
+* If the LED becomes green and the button keeps yellow, the scanner is locked by another device/thread
 
 ### Thanks to
 
