@@ -1,9 +1,9 @@
 # This Python file uses the following encoding: utf-8
 import sys, io
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsPixmapItem
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt
 from PIL import ImageEnhance, Image, ImageQt
 import numpy as np
 from ui_configform import Ui_Form
@@ -21,7 +21,12 @@ class ConfigWindow(QWidget):
         self.ui.brigthnessLcd.valueChanged.connect(self.setBrightSlider)
         self.ui.contrastLcd.valueChanged.connect(self.setContastSlider)
 
+        self.scene = QGraphicsScene()
         self.pixmap = QPixmap()
+        self.pixmapItem = QGraphicsPixmapItem()
+        self.scene.addItem(self.pixmapItem)
+        self.ui.view.setScene(self.scene)
+        #self.ui.view.fitInView(self.pixmapItem,Qt.KeepAspectRatio)
         #self.pixmap.load("Calibrate_Test_1.png")
         self.buffer = QBuffer()
         self.pilBufferImg = "/tmp/san2foldertempimg.png"
@@ -38,71 +43,55 @@ class ConfigWindow(QWidget):
        # self.im = Image.open("Calibrate_Test_1.png")
        # img = ImageQt.ImageQt(self.im.convert('RGBA'))
        # self.image.setPixmap(self.pixmap.fromImage(img))
-        self.im = None
+       # self.im = None
 
 
     @pyqtSlot(int)
     def brigthnesSlot(self,int):
         
         val =int/10
+        self.ui.brigthnessLcd.blockSignals(True)
         self.ui.brigthnessLcd.setValue(val)
-        self.brightSet=True
-
-        if self.brightSet and self.contrastSet:
-            if not self.imChanged:
-                pix = self.image.pixmap()
-                pix.save(self.pilBufferImg)
-                self.imChanged=True
-
-        if self.contrastSet:
-            pix = Image.open(self.pilBufferImg)
-            brightness = ImageEnhance.Brightness(pix)
-        else:
-            brightness = ImageEnhance.Brightness(self.im)
-
-        pil = brightness.enhance(val)
-    
-        im = ImageQt.ImageQt(pil.convert('RGBA'))
+        self.ui.brigthnessLcd.blockSignals(False)
+        contrast = self.ui.contrastSlider.value()/10
+        self.enhanceImage(val,contrast)
         
-        self.image.setPixmap(self.pixmap.fromImage(im))
     
     @pyqtSlot(int)
     def contrastSlot(self,int):
         val =int/10
+        self.ui.contrastLcd.blockSignals(True)
         self.ui.contrastLcd.setValue(val)
-        self.contrastSet=True
-
-        if self.brightSet and self.contrastSet:
-            if not self.imChanged:
-                pix = self.image.pixmap()
-                pix.save(self.pilBufferImg)
-                self.imChanged=True
-
-        if self.brightSet:
-            pix = Image.open(self.pilBufferImg)
-            contrast = ImageEnhance.Contrast(pix)
-        else:
-            contrast = ImageEnhance.Contrast(self.im)
-
-        pil = contrast.enhance(val)
-    
-        im = ImageQt.ImageQt(pil.convert('RGBA'))
-        
-        self.image.setPixmap(self.pixmap.fromImage(im))
+        self.ui.contrastLcd.blockSignals(False)
+        bright = self.ui.brigthnesSlider.value()/10
+        self.enhanceImage(bright,val)
+       
 
     @pyqtSlot(float)
     def setBrightSlider(self,val):
         value = val*10
+        self.ui.brigthnesSlider.blockSignals(True)
         self.ui.brigthnesSlider.setValue(int(value))
+        self.ui.brigthnesSlider.blockSignals(False)
     
     @pyqtSlot(float)
     def setContastSlider(self,val):
         value = val*10
+        self.ui.contrastSlider.blockSignals(True)
         self.ui.contrastSlider.setValue(int(value))
+        self.ui.contrastSlider.blockSignals(False)
+    
+    def enhanceImage(self, bright, cont):
+       # self.setBufferImage()
+        brightness = ImageEnhance.Brightness(self.pilBufferImg)
+        pilImg = brightness.enhance(bright)
+        contrast = ImageEnhance.Contrast(pilImg)
+        pilImg = contrast.enhance(cont)
+        self.pixmapItem.setPixmap(self.pixmap.fromImage(ImageQt.ImageQt(pilImg.convert('RGBA'))))
 
         
     def setBufferImage(self):
-        img = self.image.pixmap()
+        img = self.pixmapItem.pixmap()
         self.buffer.open(QBuffer.ReadWrite)
         img.save(self.buffer,"PNG")
         self.pilBufferImg = Image.open(io.BytesIO(self.buffer.data()))

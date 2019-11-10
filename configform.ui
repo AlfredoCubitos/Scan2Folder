@@ -228,20 +228,14 @@
        <height>539</height>
       </rect>
      </property>
-     <widget class="QLabel" name="image">
+     <widget class="QGraphicsView" name="view">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>411</width>
-        <height>531</height>
+        <width>421</width>
+        <height>541</height>
        </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
       </property>
      </widget>
     </widget>

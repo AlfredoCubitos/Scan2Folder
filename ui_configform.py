@@ -78,11 +78,9 @@ class Ui_Form(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 419, 539))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.image = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.image.setGeometry(QtCore.QRect(0, 0, 411, 531))
-        self.image.setText("")
-        self.image.setScaledContents(True)
-        self.image.setObjectName("image")
+        self.view = QtWidgets.QGraphicsView(self.scrollAreaWidgetContents)
+        self.view.setGeometry(QtCore.QRect(0, 0, 421, 541))
+        self.view.setObjectName("view")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scanButton = QtWidgets.QPushButton(Form)
         self.scanButton.setGeometry(QtCore.QRect(340, 280, 80, 26))
@@ -100,13 +98,3 @@ class Ui_Form(object):
         self.saveButton.setText(_translate("Form", "Save"))
         self.groupBox.setTitle(_translate("Form", "Image View"))
         self.scanButton.setText(_translate("Form", "Scan"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())

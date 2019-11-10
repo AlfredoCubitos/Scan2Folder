@@ -4,8 +4,8 @@ import sys
 import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox
 from PyQt5 import uic
-from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
+from PyQt5.QtGui import QPixmap, QImage
 import sane
 from urllib.request import urlopen
 import bs4
@@ -43,8 +43,10 @@ class MainWindow(QMainWindow):
 
         self.settings = QSettings("bibuweb.de","Scan2Folder")
 
+
         self.configWin = ConfigWindow()
         self.configWin.ui.scanButton.clicked.connect(self.configScan)
+        
 
                 
         self.ui.resolutions.addItems(self.resolution)
@@ -64,6 +66,8 @@ class MainWindow(QMainWindow):
 
         self.contrast = 1
         self.brightness = 1
+
+        
 
         if self.settings.contains("path"):
             self.ui.scanpath.setText(self.settings.value("path"))
@@ -290,9 +294,14 @@ class MainWindow(QMainWindow):
         self.dev.start()
         im = self.dev.snap()
         pix = ImageQt.ImageQt(im.convert('RGBA'))
-        self.configWin.im = im
-        self.configWin.image.setPixmap(self.configWin.pixmap.fromImage(pix))
-        im = None
+        #self.configWin.im = im
+        #self.configWin.ui.view.setPixmap(self.configWin.pixmap.fromImage(pix))
+        self.configWin.pixmapItem.setPixmap(self.configWin.pixmap.fromImage(pix))
+        self.configWin.ui.view.fitInView(self.configWin.pixmapItem,Qt.KeepAspectRatio)
+        self.configWin.pixmapItem.grabMouse()
+        self.configWin.setBufferImage()
+        self.configWin.enhanceImage(self.configWin.ui.brigthnesSlider.value()/10, self.configWin.ui.contrastSlider.value()/10)
+        #im = None
     
     @pyqtSlot()
     def saveConfig(self):
