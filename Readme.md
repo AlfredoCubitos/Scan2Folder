@@ -5,7 +5,7 @@
 This is a **PytQt5** desktop app for rapdly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP) 
 especially CM Devices.
 
-This app uses the **Sane** backend to get all the parameters need.
+This app uses the **Sane** backend to get all parameters need.
 
 It also provides a simple image enhancement feature.
 
@@ -34,6 +34,12 @@ On clicking the `Config/Calibrate` menu opens a window where you can scan a prev
 There are two slider with which you can change the brightness and the contrast.
 
 The values are stored and used the next time you are scanning
+
+### Installation
+
+Install packages needed with:
+
+>`sudo pip3 install -r deps/dependency.txt` 
 
 ### Issues
 
