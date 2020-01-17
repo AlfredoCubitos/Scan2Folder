@@ -8,12 +8,13 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtGui import QIcon
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(199, 63)
+        Dialog.setWindowIcon(QIcon(":images/icon.xpm"))
         self.progressBar = QtWidgets.QProgressBar(Dialog)
         self.progressBar.setGeometry(QtCore.QRect(10, 30, 171, 23))
         self.progressBar.setProperty("value", 24)

@@ -16,5 +16,6 @@
     <file>images/led_green.svg</file>
     <file>images/led_red.png</file>
     <file>images/led_red.svg</file>
+    <file>images/icon.xpm</file>
 </qresource>
 </RCC>
