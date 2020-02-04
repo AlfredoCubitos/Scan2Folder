@@ -74,6 +74,7 @@ class MainWindow(QMainWindow):
         
         if self.settings.contains('contrast'):
             self.brightness = self.settings.value('brightness')
+            
             self.contrast = self.settings.value('contrast')
             self.configWin.ui.brigthnessLcd.setValue(float(self.brightness))
             self.configWin.ui.brigthnesSlider.setValue(int(float(self.brightness)*10))
@@ -223,9 +224,9 @@ class MainWindow(QMainWindow):
                     self.dev.start()
                     im = self.dev.snap()
                     brightness = ImageEnhance.Brightness(im)
-                    im = brightness.enhance(self.brightness)
+                    im = brightness.enhance(float(self.brightness))
                     contrast = ImageEnhance.Contrast(im)
-                    im = contrast.enhance(self.contrast)
+                    im = contrast.enhance(float(self.contrast))
                     print("image saved ",self.ui.scanpath.text()+"/"+img)
                     im.save(savePath+img)
             time.sleep(3)
