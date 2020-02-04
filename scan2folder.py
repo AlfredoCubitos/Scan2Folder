@@ -167,6 +167,7 @@ class MainWindow(QMainWindow):
     
     def scanDocThreadEnded(self):
         self.statusBar().showMessage("Job stopped")
+        self.scanStatus = False
         self.setLedStatus()
     
     def scannerCheckThreadEnd(self):
