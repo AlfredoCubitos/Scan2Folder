@@ -47,7 +47,8 @@ class Worker(QRunnable):
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
-        self.signals = WorkerSignals()    
+        self.signals = WorkerSignals()
+        self.setAutoDelete(True)
 
         # Add the callback to our kwargs
         if len(self.kwargs.items()) > 0:

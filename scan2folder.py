@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
         self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
         
         self.is_dev = True
+        self.dev_available = False
         self.adf = False
         self.dev = None
         self.devices = []
@@ -107,9 +108,16 @@ class MainWindow(QMainWindow):
         time.sleep(1)
         self.dialog.close()
         
-        self.show()
+        if self.dev_available:
+            self.show()
+        else:
+            #TODO: put error dlg here
+            self.message.setText("No scanner found\n Check your Configuration!")
+            self.message.exec()
+            print("Error: No Devices found")
+            
      
-        print("THREAD COMPLETE!")
+        print("THREAD COMPLETE! ", self.threadpool.activeThreadCount())
 
     def scannerLookup(self):
 
@@ -134,8 +142,12 @@ class MainWindow(QMainWindow):
     
     def scannerAddToDlg(self,result):
         self.devices = result
-        for i, dev in enumerate(result):
-            self.ui.comboBox.addItem(dev[i])
+        if len(self.devices) > 0:
+            self.dev_available = True
+            for i, dev in enumerate(result):
+                self.ui.comboBox.addItem(dev[i])
+        else:
+            return
 
 
     def scannerProgress(self,val):
@@ -151,7 +163,8 @@ class MainWindow(QMainWindow):
         while  self.is_dev:
     
             try:
-                #ToDo: check index from 
+                #ToDo: check index from
+                
                 self.dev = sane.open(self.devices[0][0])
                 
                
