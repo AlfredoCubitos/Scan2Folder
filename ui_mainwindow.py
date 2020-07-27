@@ -2,20 +2,19 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QIcon
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(313, 500)
-        MainWindow.setWindowIcon(QIcon(":images/icon.xpm"))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
@@ -37,8 +36,8 @@ class Ui_MainWindow(object):
         self.btnBuW.setStatusTip("")
         self.btnBuW.setText("lineart")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":images/blackuwhite.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon.addPixmap(QtGui.QPixmap(":images/blackuwhite_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap("images/blackuwhite.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("images/blackuwhite_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.btnBuW.setIcon(icon)
         self.btnBuW.setIconSize(QtCore.QSize(48, 48))
         self.btnBuW.setCheckable(True)
@@ -48,8 +47,8 @@ class Ui_MainWindow(object):
         self.btnGray.setGeometry(QtCore.QRect(130, 30, 41, 41))
         self.btnGray.setText("gray")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":images/grey.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon1.addPixmap(QtGui.QPixmap(":images/grey_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap("grey.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("images/grey_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.btnGray.setIcon(icon1)
         self.btnGray.setIconSize(QtCore.QSize(48, 48))
         self.btnGray.setCheckable(True)
@@ -59,8 +58,8 @@ class Ui_MainWindow(object):
         self.btnColor.setGeometry(QtCore.QRect(220, 30, 41, 41))
         self.btnColor.setText("color")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":images/color.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon2.addPixmap(QtGui.QPixmap(":images/color_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon2.addPixmap(QtGui.QPixmap("images/color.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap("images/color_activ.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.btnColor.setIcon(icon2)
         self.btnColor.setIconSize(QtCore.QSize(48, 48))
         self.btnColor.setCheckable(True)
@@ -78,30 +77,37 @@ class Ui_MainWindow(object):
         self.resolutions.setObjectName("resolutions")
         self.groupBox_4 = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_4.setGeometry(QtCore.QRect(0, 160, 311, 131))
+        self.groupBox_4.setAlignment(QtCore.Qt.AlignCenter)
         self.groupBox_4.setObjectName("groupBox_4")
         self.scanpath = QtWidgets.QLineEdit(self.groupBox_4)
-        self.scanpath.setGeometry(QtCore.QRect(10, 40, 221, 26))
+        self.scanpath.setGeometry(QtCore.QRect(60, 40, 181, 26))
         self.scanpath.setText("")
         self.scanpath.setClearButtonEnabled(True)
         self.scanpath.setObjectName("scanpath")
         self.btnOpenDir = QtWidgets.QToolButton(self.groupBox_4)
         self.btnOpenDir.setGeometry(QtCore.QRect(250, 30, 41, 41))
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":images/folder-pictures.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon3.addPixmap(QtGui.QPixmap(":images/folder-pictures.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon3.addPixmap(QtGui.QPixmap("folder-pictures.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap("images/folder-pictures.svg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.btnOpenDir.setIcon(icon3)
         self.btnOpenDir.setIconSize(QtCore.QSize(32, 32))
         self.btnOpenDir.setObjectName("btnOpenDir")
         self.filename = QtWidgets.QLineEdit(self.groupBox_4)
-        self.filename.setGeometry(QtCore.QRect(10, 90, 221, 26))
+        self.filename.setGeometry(QtCore.QRect(60, 90, 181, 26))
         self.filename.setObjectName("filename")
+        self.label_2 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_2.setGeometry(QtCore.QRect(10, 40, 31, 18))
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_3.setGeometry(QtCore.QRect(10, 90, 41, 18))
+        self.label_3.setObjectName("label_3")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(170, 340, 58, 18))
         self.label.setObjectName("label")
         self.statusLed = QtWidgets.QLabel(self.centralwidget)
         self.statusLed.setGeometry(QtCore.QRect(260, 330, 41, 41))
         self.statusLed.setText("")
-        self.statusLed.setPixmap(QtGui.QPixmap(":images/led_red.png"))
+        self.statusLed.setPixmap(QtGui.QPixmap("images/led_red.png"))
         self.statusLed.setScaledContents(True)
         self.statusLed.setObjectName("statusLed")
         MainWindow.setCentralWidget(self.centralwidget)
@@ -135,21 +141,13 @@ class Ui_MainWindow(object):
         self.btnGray.setToolTip(_translate("MainWindow", "Gray scan"))
         self.btnColor.setToolTip(_translate("MainWindow", "Color scan"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Resolution"))
-        self.groupBox_4.setTitle(_translate("MainWindow", "Scan Path"))
+        self.groupBox_4.setTitle(_translate("MainWindow", "Scanned Images"))
         self.scanpath.setPlaceholderText(_translate("MainWindow", "Path to Scanned Images"))
         self.btnOpenDir.setText(_translate("MainWindow", "..."))
         self.filename.setPlaceholderText(_translate("MainWindow", "Enter file name"))
+        self.label_2.setText(_translate("MainWindow", "Path:"))
+        self.label_3.setText(_translate("MainWindow", "Image:"))
         self.label.setText(_translate("MainWindow", "Status"))
         self.menuCalibrate.setTitle(_translate("MainWindow", "Config"))
         self.actionScanFolder.setText(_translate("MainWindow", "ScanFolder"))
         self.actionCalibrate.setText(_translate("MainWindow", "Calibrate"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

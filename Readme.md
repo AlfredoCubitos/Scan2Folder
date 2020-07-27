@@ -5,7 +5,7 @@
 This is a **PytQt5** desktop app for rapdly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP) 
 especially CM Devices.
 
-This app uses the **Sane** backend to get all parameters need.
+This app uses the **Sane** backend to get all parameters needed.
 
 It also provides a simple image enhancement feature.
 

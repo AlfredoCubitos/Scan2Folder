@@ -222,14 +222,17 @@
      </rect>
     </property>
     <property name="title">
-     <string>Scan Path</string>
+     <string>Scanned Images</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
     <widget class="QLineEdit" name="scanpath">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>60</x>
        <y>40</y>
-       <width>221</width>
+       <width>181</width>
        <height>26</height>
       </rect>
      </property>
@@ -270,14 +273,40 @@
     <widget class="QLineEdit" name="filename">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>60</x>
        <y>90</y>
-       <width>221</width>
+       <width>181</width>
        <height>26</height>
       </rect>
      </property>
      <property name="placeholderText">
       <string>Enter file name</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>31</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Path:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>41</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Image:</string>
      </property>
     </widget>
    </widget>
