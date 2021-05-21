@@ -20,6 +20,7 @@ from multithread import Worker, WorkerSignals
 
 XML_PATH = '/hp/device/notifications.xml'
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -56,7 +57,10 @@ class MainWindow(QMainWindow):
         self.ui.btnStartscan.clicked.connect(self.startScanJob)
         self.ui.actionCalibrate.triggered.connect(self.configureWindow)
         self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
-        
+        # Change Color back after error
+        self.ui.filename.cursorPositionChanged.connect(self.leditcolor)
+        self.ui.scanpath.cursorPositionChanged.connect(self.leditcolor)
+
         self.is_dev = True
         self.dev_available = False
         self.adf = False
@@ -136,6 +140,7 @@ class MainWindow(QMainWindow):
             mode = self.ui.btnGray.text()
         elif self.ui.btnColor.isChecked():
             mode = self.ui.btnColor.text()
+        print(mode)
         return mode
     
     
@@ -160,6 +165,8 @@ class MainWindow(QMainWindow):
 
     def scannerCheck(self):
         self.statusBar().showMessage("looking up for scanner ....")
+        print(self.devices[0])
+        
         while  self.is_dev:
     
             try:
@@ -169,7 +176,7 @@ class MainWindow(QMainWindow):
                 
                
             except:
-                print("no scanner connected, waiting...")
+                print("no scanner connected, waiting...",self.dev)
             if self.dev is not None:
                 self.is_dev = False
                 print("scanner connected")
@@ -203,6 +210,7 @@ class MainWindow(QMainWindow):
 
     def scanDocuments(self):
         ip = self.devices[0][0].split('=')[1]
+        print(ip)
         url = 'http://' + ip + XML_PATH
         self.dev.mode = self.checkScanMode()
         self.dev.resolution = int(self.ui.resolutions.currentText())
@@ -244,6 +252,10 @@ class MainWindow(QMainWindow):
                     print("image saved ",self.ui.scanpath.text()+"/"+img)
                     im.save(savePath+img)
             time.sleep(3)
+    # Slot
+    def leditcolor(self):
+        self.ui.scanpath.setStyleSheet("background-color:rgb(255, 255, 255)")
+        self.ui.filename.setStyleSheet("background-color:rgb(255, 255, 255)")
 
     def startScanJob(self):
         
@@ -267,13 +279,18 @@ class MainWindow(QMainWindow):
             return
 
 
+
         if not self.scanStatus:
             self.setScanButton("starting")
             self.startThread(self.scannerCheck,self.setScannerStatus, self.scannerCheckThreadEnd)
             self.scanStatus = True
+            self.ui.scanpath.setEnabled(False)
+            self.ui.filename.setEnabled(False)
         else:
             self.scanStatus = False
             self.setScanButton("stopped")
+            self.ui.scanpath.setEnabled(True)
+            self.ui.filename.setEnabled(True)
     
     def setScanButton(self,status):
 
