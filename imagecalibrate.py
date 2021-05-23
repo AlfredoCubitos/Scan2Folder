@@ -3,7 +3,7 @@ import sys, io
 from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsPixmapItem
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt, QPoint
 from PIL import ImageEnhance, Image, ImageQt
 import numpy as np
 from ui_configform import Ui_Form
@@ -39,11 +39,16 @@ class ConfigWindow(QWidget):
         self.contast = self.ui.contrastSlider.maximum()/2
 
 
+    def wheelEvent(self, event):
 
-       # self.im = Image.open("Calibrate_Test_1.png")
-       # img = ImageQt.ImageQt(self.im.convert('RGBA'))
-       # self.image.setPixmap(self.pixmap.fromImage(img))
-       # self.im = None
+        degrees = event.angleDelta() / 8
+
+        if self.pixmapItem.isUnderMouse():
+
+            if degrees.y()/15 > 0:
+                self.ui.view.scale(1.25, 1.25)
+            else:
+                self.ui.view.scale(0.8, 0.8)
 
 
     @pyqtSlot(int)
