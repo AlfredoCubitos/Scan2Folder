@@ -14,7 +14,7 @@ from imagecalibrate import ConfigWindow
 
 from PIL import ImageEnhance, ImageQt
 from ui_dialog import Ui_Dialog
-from ui_mainwindow import Ui_MainWindow
+#from ui_mainwindow import Ui_MainWindow
 
 from multithread import Worker, WorkerSignals
 
@@ -33,9 +33,9 @@ class MainWindow(QMainWindow):
         self.scanFolder = "/tmp/"
         self.ver = sane.init()
         
-        #self.ui = uic.loadUi("mainwindow.ui", self)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui = uic.loadUi("mainwindow.ui", self)
+        #self.ui = Ui_MainWindow()
+        #self.ui.setupUi(self)
         
         self.dialog = QDialog()
         self.message = QMessageBox()
@@ -71,6 +71,8 @@ class MainWindow(QMainWindow):
 
         self.contrast = 1
         self.brightness = 1
+        self.color = 1
+        self.sharpness = 1
 
         
 
@@ -85,7 +87,11 @@ class MainWindow(QMainWindow):
             self.configWin.ui.brigthnesSlider.setValue(int(float(self.brightness)*10))
             self.configWin.ui.contrastLcd.setValue(float(self.contrast))
             self.configWin.ui.contrastSlider.setValue(int(float(self.contrast)*10))
-        
+
+    def closeEvent(self):
+        #if not set, process keeps running in background
+        self.scanStatus = False
+
 
     def openDir(self):
         fileDlg = QFileDialog()
@@ -126,7 +132,7 @@ class MainWindow(QMainWindow):
     def scannerLookup(self):
 
         #self.dialog.setModal(True)
-        
+
         self.uidlg = Ui_Dialog()
         self.uidlg.setupUi(self.dialog)
     
@@ -332,15 +338,20 @@ class MainWindow(QMainWindow):
         self.configWin.ui.view.fitInView(self.configWin.pixmapItem,Qt.KeepAspectRatio)
         self.configWin.pixmapItem.grabMouse()
         self.configWin.setBufferImage()
-        self.configWin.enhanceImage(self.configWin.ui.brigthnesSlider.value()/10, self.configWin.ui.contrastSlider.value()/10)
+        self.configWin.enhanceImage()
         #im = None
     
     @pyqtSlot()
     def saveConfig(self):
-        self.brightness = self.configWin.ui.brigthnessLcd.value()
-        self.contrast = self.configWin.ui.contrastLcd.value()
+        self.brightness     = self.configWin.ui.brigthnessLcd.value()
+        self.contrast       = self.configWin.ui.contrastLcd.value()
+        self.color          = self.configWin.ui.colorLcd.value()
+        self.sharpness      = self.configWin.ui.sharpnessLcd.value()
+
         self.settings.setValue('brightness',self.brightness)
         self.settings.setValue('contrast',self.contrast)
+        self.settings.setValue('color',self.color)
+        self.settings.setValue('sharpness',self.sharpness)
         self.settings.sync()
         self.configWin.close()
 
@@ -352,7 +363,7 @@ def main():
     
     #window.show()
     
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':
