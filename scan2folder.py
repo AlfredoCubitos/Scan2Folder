@@ -297,6 +297,7 @@ class MainWindow(QMainWindow):
             self.setScanButton("stopped")
             self.ui.scanpath.setEnabled(True)
             self.ui.filename.setEnabled(True)
+            self.ui.filename.clear()
     
     def setScanButton(self,status):
 
