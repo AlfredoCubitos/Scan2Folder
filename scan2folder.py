@@ -2,7 +2,7 @@
 # This Python file uses the following encoding: utf-8
 import sys
 import time
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter
 from PyQt5 import uic
 from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap, QImage
@@ -11,6 +11,8 @@ from urllib.request import urlopen
 import bs4
 import resources
 from imagecalibrate import ConfigWindow
+import glob
+import os
 
 from PIL import ImageEnhance, ImageQt
 from ui_dialog import Ui_Dialog
@@ -59,6 +61,7 @@ class MainWindow(QMainWindow):
         self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
         # Change Color back after error
         self.ui.filename.cursorPositionChanged.connect(self.leditcolor)
+
         self.ui.scanpath.cursorPositionChanged.connect(self.leditcolor)
 
         self.is_dev = True
@@ -73,11 +76,14 @@ class MainWindow(QMainWindow):
         self.brightness = 1
         self.color = 1
         self.sharpness = 1
+        self.scanPath = ""
 
         
 
         if self.settings.contains("path"):
             self.ui.scanpath.setText(self.settings.value("path"))
+            self.scanPath = self.settings.value("path")
+            self.createCompleter()
         
         if self.settings.contains('contrast'):
             self.brightness = self.settings.value('brightness')
@@ -88,7 +94,7 @@ class MainWindow(QMainWindow):
             self.configWin.ui.contrastLcd.setValue(float(self.contrast))
             self.configWin.ui.contrastSlider.setValue(int(float(self.contrast)*10))
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         #if not set, process keeps running in background
         self.scanStatus = False
 
@@ -128,6 +134,16 @@ class MainWindow(QMainWindow):
             
      
         print("THREAD COMPLETE! ", self.threadpool.activeThreadCount())
+
+    def createCompleter(self):
+        ff = glob.glob(self.scanPath+"/*.pdf")
+        files = []
+        for f in ff:
+            files.append(os.path.basename(f).split('.')[0])
+        completer = QCompleter(files)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.ui.filename.setCompleter(completer)
+
 
     def scannerLookup(self):
 

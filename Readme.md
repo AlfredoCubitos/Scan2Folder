@@ -14,13 +14,16 @@ On the frontend you can select the scanner
 
 >*Note: in this version only the first scanner is used*
 
-Then you can select a scan mode. The color mode is pre selected.
-Next you have to enter a path to a folder where to store all the images.
-The next input is needed to give the image a prefix name. All the scanned images will enumerated automatically.
-After selecting a resolution you can start the service.
+### Usage
 
-The service first looks up if a scanner is reachable.
-You can start the service first and then switch on the scanner device.
+1. Ensure that your scanner is reachable
+2. Start the app
+3. Select a *ScanMode*
+4. Select a path where you want to store your images
+5. Enter an image prefix name. All the scanned images will enumerated automatically.
+6. Choose a scan resolution
+7. Press the *Start Service* button
+
 If the scanner is reachable the LED turns on green and you can use the scan-to-folder button on your device.
 
 ### Image enhancement
@@ -39,7 +42,13 @@ The values are stored and used the next time you are scanning
 
 Install packages needed with:
 
->`sudo pip3 install -r deps/dependency.txt` 
+>`sudo pip3 install -r deps/dependency.txt`
+
+
+### New Features
+
+* Image name is cleared when stopped a scan session
+* Image name has now autocomplete, to avoid overwrite existing files
 
 ### Issues
 
