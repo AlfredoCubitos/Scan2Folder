@@ -2,7 +2,7 @@
 
 ## Enabling the Scan-to-Folder button on HP MFP printers
 
-This is a **PytQt5** desktop app for rapdly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP) 
+This is a **PytQt5** desktop app for rapidly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP)
 especially CM Devices.
 
 This app uses the **Sane** backend to get all parameters needed.
@@ -44,11 +44,19 @@ Install packages needed with:
 
 >`sudo pip3 install -r deps/dependency.txt`
 
+### Binary
+
+In the *bin* directory a `spec` file for `pyinstaller` is provided
+
+Calling `#> pyinstaller scan2folder.spec` creates a single executable binary for your environment
+
+Have a look at the [pyinstaller doc](https://pyinstaller.readthedocs.io) for more information
 
 ### New Features
 
+* spec file for creating stand alone binaries
 * Image name is cleared when stopped a scan session
-* Image name has now autocomplete, to avoid overwrite existing files
+* Image name has now auto complete, to avoid overwrite existing files
 
 ### Issues
 

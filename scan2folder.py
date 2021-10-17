@@ -20,7 +20,7 @@ from multithread import Worker, WorkerSignals
 from imagecalibrate import ConfigWindow
 
 #from ui_mainwindow import Ui_MainWindow
-#import resources
+import resources
 
 
 
