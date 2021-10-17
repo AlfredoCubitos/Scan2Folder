@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="scanner">
+    <normaloff>.</normaloff>.</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
@@ -87,12 +91,11 @@
       <string comment="Black&amp;White Line Mode"/>
      </property>
      <property name="text">
-      <string notr="true">lineart</string>
+      <string notr="true">Lineart</string>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>images/blackuwhite.svg</normaloff>
-       <normalon>images/blackuwhite_activ.svg</normalon>images/blackuwhite.svg</iconset>
+      <iconset resource="resources.qrc">
+       <normaloff>:/images/scan_bw.svg</normaloff>:/images/scan_bw.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -123,9 +126,8 @@
       <string notr="true">gray</string>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>grey.svg</normaloff>
-       <normalon>images/grey_activ.svg</normalon>grey.svg</iconset>
+      <iconset resource="resources.qrc">
+       <normaloff>:/images/scan_grey.svg</normaloff>:/images/scan_grey.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -156,9 +158,8 @@
       <string notr="true">color</string>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>images/color.svg</normaloff>
-       <normalon>images/color_activ.svg</normalon>images/color.svg</iconset>
+      <iconset resource="resources.qrc">
+       <normaloff>:/images/scan_color.svg</normaloff>:/images/scan_color.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -259,9 +260,8 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>folder-pictures.svg</normaloff>
-       <normalon>images/folder-pictures.svg</normalon>folder-pictures.svg</iconset>
+      <iconset theme="folder-images">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -339,7 +339,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>images/led_red.png</pixmap>
+     <pixmap resource="resources.qrc">:/images/square_red.svg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -375,6 +375,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

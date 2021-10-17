@@ -1,24 +1,34 @@
 #!/usr/bin/python3
 # This Python file uses the following encoding: utf-8
-import sys
-import time
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter
 from PyQt5 import uic
 from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap, QImage
+
+import sys
+import time
 import sane
 from urllib.request import urlopen
 import bs4
-import resources
-from imagecalibrate import ConfigWindow
 import glob
 import os
-
 from PIL import ImageEnhance, ImageQt
-from ui_dialog import Ui_Dialog
-#from ui_mainwindow import Ui_MainWindow
 
+from ui_dialog import Ui_Dialog
 from multithread import Worker, WorkerSignals
+from imagecalibrate import ConfigWindow
+
+#from ui_mainwindow import Ui_MainWindow
+#import resources
+
+
+
+try:
+    os.chdir(sys._MEIPASS)
+    print(sys._MEIPASS)
+except:
+    pass
 
 XML_PATH = '/hp/device/notifications.xml'
 
