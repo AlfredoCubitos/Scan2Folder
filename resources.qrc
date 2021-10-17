@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>mainwindow.ui</file>
+    <file>images/scan_bw.svg</file>
+    <file>images/scan_grey.svg</file>
+    <file>images/scan_color.svg</file>
+    <file>images/square_red.svg</file>
+    <file>images/square_green.svg</file>
+</qresource>
+</RCC>
