@@ -233,9 +233,9 @@ class MainWindow(QMainWindow):
     
     def setLedStatus(self):
         if self.scanStatus:
-            pix = QPixmap(":/images/led_green.png")
+            pix = QPixmap(":/images/square_green.svg")
         else:
-            pix = QPixmap(":/images/led_red.png")
+            pix = QPixmap(":/images/square_red.svg")
 
         self.ui.statusLed.setPixmap(pix)
 
