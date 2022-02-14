@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # This Python file uses the following encoding: utf-8
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter, QProgressDialog, QProgressBar
 from PyQt5 import uic
 from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap, QImage
@@ -14,6 +14,9 @@ import bs4
 import glob
 import os
 from PIL import ImageEnhance, ImageQt
+import ocrtools as ocrt
+import tempfile
+
 
 from ui_dialog import Ui_Dialog
 from multithread import Worker, WorkerSignals
@@ -42,7 +45,7 @@ class MainWindow(QMainWindow):
         self.mode = ['lineart','gray','color']
         self.resolution = ['75','100','150','200','300','600','1200']
         self.compression = ['None','JPEG']
-        self.scanFolder = "/tmp/"
+        self.scanFolder = os.getcwd()
         self.ver = sane.init()
         
         self.ui = uic.loadUi("mainwindow.ui", self)
@@ -56,8 +59,9 @@ class MainWindow(QMainWindow):
 
         self.settings = QSettings("bibuweb.de","Scan2Folder")
 
+        self.progressBar = None
 
-        self.configWin = ConfigWindow()
+        self.configWin = ConfigWindow(self)
         self.configWin.ui.scanButton.clicked.connect(self.configScan)
         
 
@@ -67,15 +71,21 @@ class MainWindow(QMainWindow):
 
         self.ui.btnOpenDir.clicked.connect(self.openDir)
         self.ui.btnStartscan.clicked.connect(self.startScanJob)
+        self.ui.btnOcr.clicked.connect(self.ocr_startProcess)
+
         self.ui.actionCalibrate.triggered.connect(self.configureWindow)
         self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
+
+
         # Change Color back after error
         self.ui.filename.cursorPositionChanged.connect(self.leditcolor)
 
         self.ui.scanpath.cursorPositionChanged.connect(self.leditcolor)
+        self.ui.scanpath.textChanged.connect(self.scanPathCanged)
 
         self.is_dev = True
         self.dev_available = False
+        self.dev_connected = False
         self.adf = False
         self.dev = None
         self.devices = []
@@ -87,8 +97,43 @@ class MainWindow(QMainWindow):
         self.color = 1
         self.sharpness = 1
         self.scanPath = ""
+        self.ocr = False
+        self.crop = False
+        self.cropSize = {'left':1,'top':1,'width':1,'height':1}
+        self.ocrFiles = []
+        self.tempocr = None
 
-        
+
+
+        if self.settings.contains("ocr"):
+            print("Load: ",self.settings.value('ocr'))
+            if self.settings.value('ocr') == 'true':
+                self.ocr = True
+                self.ui.actionEnable_OCR.setChecked(True)
+                self.configWin.ui.OCR_Enabled.setChecked(True)
+                self.configWin.ui.OCR_Box.setEnabled(True)
+
+            else:
+                self.ui.actionEnable_OCR.setChecked(False)
+                self.configWin.ui.OCR_Enabled.setChecked(False)
+                self.configWin.ui.OCR_Box.setEnabled(False)
+            ## connect Signal here and not before loading settings
+            ## if not, you never will get the stored value because QAction is triggered when ever the value changed
+            self.configWin.ui.OCR_Enabled.stateChanged.connect(self.ocrConfig)
+
+        if self.settings.contains('crop'):
+            if self.settings.value('crop') == 'true':
+                self.crop = True
+            self.configWin.ui.checkCrop.setChecked(self.crop)
+
+        if self.settings.contains('cropSize'):
+            #print(self.settings.value('cropSize'))
+            self.cropSize = self.settings.value('cropSize')
+            self.configWin.ui.cropX.setValue(self.cropSize['left'])
+            self.configWin.ui.cropY.setValue(self.cropSize['top'])
+            self.configWin.ui.cropW.setValue(self.cropSize['width'])
+            self.configWin.ui.cropH.setValue(self.cropSize['height'])
+
 
         if self.settings.contains("path"):
             self.ui.scanpath.setText(self.settings.value("path"))
@@ -111,7 +156,7 @@ class MainWindow(QMainWindow):
 
     def openDir(self):
         fileDlg = QFileDialog()
-        self.scanFolder = fileDlg.getExistingDirectory(self,'Scan Folder')
+        self.scanFolder = fileDlg.getExistingDirectory(self,'Scan Folder',self.scanFolder, QFileDialog.DontUseNativeDialog)
         self.ui.scanpath.setText(self.scanFolder)
         self.settings.setValue("path",self.scanFolder)
         self.settings.sync()
@@ -144,6 +189,12 @@ class MainWindow(QMainWindow):
             
      
         print("THREAD COMPLETE! ", self.threadpool.activeThreadCount())
+
+
+    @pyqtSlot(str)
+    def scanPathCanged(self,path):
+        self.scanPath = path
+        self.createCompleter()
 
     def createCompleter(self):
         ff = glob.glob(self.scanPath+"/*.pdf")
@@ -198,9 +249,9 @@ class MainWindow(QMainWindow):
     def scannerCheck(self):
         self.statusBar().showMessage("looking up for scanner ....")
         print(self.devices[0])
-        
+        count = 0
         while  self.is_dev:
-    
+
             try:
                 #ToDo: check index from
                 
@@ -211,8 +262,15 @@ class MainWindow(QMainWindow):
                 print("no scanner connected, waiting...",self.dev)
             if self.dev is not None:
                 self.is_dev = False
+                self.dev_connected = True
                 print("scanner connected")
             time.sleep(3)
+            ## Stop process after 3 times to avoid endless loop if no device is available
+            ## due started as thread
+            count += 1
+            if count > 2:
+                self.is_dev = False
+                self.statusBar().showMessage("No Scanner connected!")
     
     def commonThreadEnd(self):
         print("Thread ended")
@@ -224,12 +282,18 @@ class MainWindow(QMainWindow):
     
     def scannerCheckThreadEnd(self):
         print("Lookup Thread ended")
-        self.startThread(self.scanDocuments,None,self.scanDocThreadEnded)
+
+        if self.dev_connected:
+            self.startThread(self.scanDocuments,None,self.scanDocThreadEnded)
 
     def setScannerStatus(self):
-        self.setLedStatus()
-        self.statusBar().showMessage("Scanner connected",10)
-        self.setScanButton("running")
+        if self.dev_connected:
+            self.setLedStatus()
+            self.statusBar().showMessage("Scanner connected",10)
+            self.setScanButton("running")
+        else:
+            self.setScanButton('stopped')
+
     
     def setLedStatus(self):
         if self.scanStatus:
@@ -268,6 +332,8 @@ class MainWindow(QMainWindow):
                             imgNr = imgNr+1
                             img = imgPrefix+str(imgNr)+".png"
                             im.save(savePath+img)
+                            if self.ocr:
+                                self.ocrFiles.append(savePath+img)
                         except:
                             self.adf=False
                             break
@@ -283,8 +349,11 @@ class MainWindow(QMainWindow):
                     im = contrast.enhance(float(self.contrast))
                     print("image saved ",self.ui.scanpath.text()+"/"+img)
                     im.save(savePath+img)
+                    if self.ocr:
+                        self.ocrFiles.append(savePath+img)
             time.sleep(3)
-    # Slot
+
+    @pyqtSlot()
     def leditcolor(self):
         self.ui.scanpath.setStyleSheet("background-color:rgb(255, 255, 255)")
         self.ui.filename.setStyleSheet("background-color:rgb(255, 255, 255)")
@@ -310,7 +379,12 @@ class MainWindow(QMainWindow):
             self.ui.filename.setStyleSheet("background-color:rgb(255, 170, 127)")
             return
 
-
+        if self.ocr:
+                self.ui.btnOcr.setEnabled(True)
+                self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
+                for f in self.ocrFiles:
+                    self.tempocr.write(str(f+"\n").encode())
+                self.tempocr.close()
 
         if not self.scanStatus:
             self.setScanButton("starting")
@@ -324,6 +398,7 @@ class MainWindow(QMainWindow):
             self.ui.scanpath.setEnabled(True)
             self.ui.filename.setEnabled(True)
             self.ui.filename.clear()
+
     
     def setScanButton(self,status):
 
@@ -341,20 +416,67 @@ class MainWindow(QMainWindow):
         if status == "stopped":
             self.ui.btnStartscan.setText("Sart Scan")
             self.ui.btnStartscan.setStyleSheet(self.btnStyle)
+
     
     def configureWindow(self):  
 
         if self.dev is not None:
             self.configWin.ui.scanButton.setEnabled(True)
+            self.configWin.ui.scanButton.setText("Start Scan")
         else:
             self.configWin.ui.scanButton.setEnabled(False)
+            self.configWin.ui.scanButton.setText("Sart Scan Service first")
         
         self.configWin.show()
 
+    def ocr_startProcess(self):
+        self.progressDlg = QProgressDialog(self)
+        self.progressDlg.setWindowTitle("OCR Process")
+        self.progressDlg.setLabelText("OCR Process in Progress ...")
+        self.progressDlg.setAutoClose(True)
+        self.progressDlg.setModal(True)
+        self.startThread(self.ocr_process,None,self.ocr_stopped)
 
+
+    def ocr_process(self):
+
+        if len(self.ocrFiles) > 0:
+            self.progressDlg.setRange(0,100)
+            c = 0
+            val = 0
+            max = len(self.ocrFiles)
+
+            for f in self.ocrFiles:
+                c += 1
+                val = (c/max)*100
+                self.progressDlg.setValue(val)
+
+                #TODO: if is checked
+                ocrt.deskew(f)
+                #TODO: if is checked
+                #NOTE: this is crop and resize in one step
+                #      size and dpi are predifined to A4 300
+                print(self.cropSize)
+                if self.cropSize['width'] > 1:
+                    ocrt.crop_resize(f,self.cropSize["left"],self.cropSize["top"], self.cropSize["width"],self.cropSize["height"])
+                #TODO: if is checked
+                ocrt.check_orientation(f)
+
+
+
+            print(self.tempocr.name)
+            pdfname = self.ocrFiles[0].rstrip("_1.png")
+            print(pdfname)
+            ocrt.create_pdf(self.tempocr.name, pdfname)
+            os.unlink(self.tempocr.name)
+        else:
+            return
+
+    def ocr_stopped(self):
+        pass
     
     def configScan(self):
-        self.dev.resolution=150
+        self.dev.resolution=int(self.ui.resolutions.currentText())
         self.dev.mode=self.checkScanMode()
         self.dev.start()
         im = self.dev.snap()
@@ -374,16 +496,39 @@ class MainWindow(QMainWindow):
         self.contrast       = self.configWin.ui.contrastLcd.value()
         self.color          = self.configWin.ui.colorLcd.value()
         self.sharpness      = self.configWin.ui.sharpnessLcd.value()
+        self.crop           = self.configWin.ui.checkCrop.isChecked()
 
         self.settings.setValue('brightness',self.brightness)
         self.settings.setValue('contrast',self.contrast)
         self.settings.setValue('color',self.color)
         self.settings.setValue('sharpness',self.sharpness)
+        self.settings.setValue('ocr', self.ocr)
+        self.settings.setValue('crop', self.crop)
+        self.settings.setValue('cropSize',self.cropSize)
         self.settings.sync()
         self.configWin.close()
 
+    @pyqtSlot(int)
+    def ocrConfig(self,state):
+        if state == Qt.Checked:
+            self.ocr = True
+            self.configWin.ui.OCR_Box.setEnabled(True)
+        else:
+            self.ocr = False
+            self.configWin.ui.OCR_Box.setEnabled(False)
 
+
+    def closeEvent(self,e):
+        if self.tempocr is not None:
+            if os.path.exists(self.tempocr.name):
+                os.unlink(self.tempocr.name)
+        if self.configWin.isVisible():
+            self.configWin.close()
+
+
+        e.accept()
 def main():
+
     app = QApplication(sys.argv)
     window = MainWindow()
     window.scanners()

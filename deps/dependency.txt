@@ -5,3 +5,8 @@ python-sane
 bs4
 lxml
 Pillow
+wand
+pytesseract
+numpy
+
+

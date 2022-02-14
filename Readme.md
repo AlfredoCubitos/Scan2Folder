@@ -7,12 +7,28 @@ especially CM Devices.
 
 This app uses the **Sane** backend to get all parameters needed.
 
-It also provides a simple image enhancement feature.
-
-The script first looks up all the scanner available.
-On the frontend you can select the scanner
+It also provides image enhancement features.
 
 >*Note: in this version only the first scanner is used*
+
+
+**NEW:** OCR processing and PDF-Document creation from your scanns.
+
+After you finished scanning, you can start an OCR-process
+The OCR-Process will do the following steps:
+
+1. Deskew each page
+2. Crop the image
+3. Check text orientation
+4. Start ocr
+5. Create the PDF
+
+You can define the crop size in the configuration dialog
+
+>*Note: In this version A4 page size for 300dpi is predifned.*
+If you want to change this, you can do it in ocrtools.py
+
+
 
 ### Usage
 
@@ -34,15 +50,17 @@ On clicking the `Config/Calibrate` menu opens a window where you can scan a prev
 
 >*Only flatbed scanning is supported*
 
-There are two slider with which you can change the brightness and the contrast.
-
-The values are stored and used the next time you are scanning
 
 ### Installation
 
 Install packages needed with:
 
 >`sudo pip3 install -r deps/dependency.txt`
+
+#### For OCR
+
+Install tesseract-ocr 4 with your language **and**  with Orientation & Script detection
+
 
 ### Binary
 
