@@ -379,12 +379,7 @@ class MainWindow(QMainWindow):
             self.ui.filename.setStyleSheet("background-color:rgb(255, 170, 127)")
             return
 
-        if self.ocr:
-                self.ui.btnOcr.setEnabled(True)
-                self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
-                for f in self.ocrFiles:
-                    self.tempocr.write(str(f+"\n").encode())
-                self.tempocr.close()
+
 
         if not self.scanStatus:
             self.setScanButton("starting")
@@ -399,6 +394,12 @@ class MainWindow(QMainWindow):
             self.ui.filename.setEnabled(True)
             self.ui.filename.clear()
 
+            if self.ocr and len(self.ocrFiles) > 0:
+                self.ui.btnOcr.setEnabled(True)
+                self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
+                for f in self.ocrFiles:
+                    self.tempocr.write(str(f+"\n").encode())
+                self.tempocr.close()
     
     def setScanButton(self,status):
 
@@ -433,7 +434,8 @@ class MainWindow(QMainWindow):
         self.progressDlg = QProgressDialog(self)
         self.progressDlg.setWindowTitle("OCR Process")
         self.progressDlg.setLabelText("OCR Process in Progress ...")
-        self.progressDlg.setAutoClose(True)
+        self.progressDlg.setAutoClose(False)
+        self.progressDlg.setAutoReset(False)
         self.progressDlg.setModal(True)
         self.startThread(self.ocr_process,None,self.ocr_stopped)
 
@@ -441,14 +443,14 @@ class MainWindow(QMainWindow):
     def ocr_process(self):
 
         if len(self.ocrFiles) > 0:
-            self.progressDlg.setRange(0,100)
-            c = 0
+            self.progressDlg.setRange(0,len(self.ocrFiles))
+
             val = 0
             max = len(self.ocrFiles)
 
             for f in self.ocrFiles:
-                c += 1
-                val = (c/max)*100
+                val += 1
+
                 self.progressDlg.setValue(val)
 
                 #TODO: if is checked
@@ -468,12 +470,20 @@ class MainWindow(QMainWindow):
             pdfname = self.ocrFiles[0].rstrip("_1.png")
             print(pdfname)
             ocrt.create_pdf(self.tempocr.name, pdfname)
+            ####
+            ## Workaround to get a correct finished process
+            ## while pytesseract uses subprocces which can not be handled in this thread
+            ####
+            while not os.path.isfile(pdfname+".pdf"):
+                time.sleep(3)
             os.unlink(self.tempocr.name)
+            self.ocrFiles.clear()
         else:
             return
 
     def ocr_stopped(self):
-        pass
+        print("OCR finished")
+        self.progressDlg.close()
     
     def configScan(self):
         self.dev.resolution=int(self.ui.resolutions.currentText())
