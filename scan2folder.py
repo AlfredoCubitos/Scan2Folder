@@ -443,10 +443,11 @@ class MainWindow(QMainWindow):
     def ocr_process(self):
 
         if len(self.ocrFiles) > 0:
-            self.progressDlg.setRange(0,len(self.ocrFiles))
 
             val = 0
-            max = len(self.ocrFiles)
+            ### add one more for pdf create process
+            max = len(self.ocrFiles) + 1
+            self.progressDlg.setRange(0,max)
 
             for f in self.ocrFiles:
                 val += 1
@@ -467,8 +468,10 @@ class MainWindow(QMainWindow):
 
 
             print(self.tempocr.name)
-            pdfname = self.ocrFiles[0].rstrip("_1.png")
+            pdfname = self.ocrFiles[0].removesuffix("_1.png")
             print(pdfname)
+            ### this runs in its own process
+            self.progressDlg.setLabelText("OCR Process finishing ...")
             ocrt.create_pdf(self.tempocr.name, pdfname)
             ####
             ## Workaround to get a correct finished process
@@ -476,6 +479,7 @@ class MainWindow(QMainWindow):
             ####
             while not os.path.isfile(pdfname+".pdf"):
                 time.sleep(3)
+            self.progressDlg.setValue(val+1)
             os.unlink(self.tempocr.name)
             self.ocrFiles.clear()
         else:
