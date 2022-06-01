@@ -149,6 +149,16 @@ class MainWindow(QMainWindow):
             self.configWin.ui.contrastLcd.setValue(float(self.contrast))
             self.configWin.ui.contrastSlider.setValue(int(float(self.contrast)*10))
 
+        if self.settings.contains('color'):
+            self.color = self.settings.value('color')
+            self.configWin.ui.colorLcd.setValue(float(self.color))
+            self.configWin.ui.colorSlider.setValue(int(float(self.color)*10))
+
+        if self.settings.contains("sharpness"):
+            self.sharpness = self.settings.value('sharpness')
+            self.configWin.ui.sharpnessLcd.setValue(float(self.sharpness))
+            self.configWin.ui.sharpnessSlider.setValue(int(float(self.sharpness)*10))
+
     def closeEvent(self, event):
         #if not set, process keeps running in background
         self.scanStatus = False
@@ -343,15 +353,22 @@ class MainWindow(QMainWindow):
                     img = imgPrefix+str(imgNr)+".png"
                     self.dev.start()
                     im = self.dev.snap()
-                    brightness = ImageEnhance.Brightness(im)
-                    im = brightness.enhance(float(self.brightness))
-                    contrast = ImageEnhance.Contrast(im)
-                    im = contrast.enhance(float(self.contrast))
-                    print("image saved ",self.ui.scanpath.text()+"/"+img)
-                    im.save(savePath+img)
+                    self.enhanceImage(im,savePath,img)
                     if self.ocr:
                         self.ocrFiles.append(savePath+img)
             time.sleep(3)
+
+    def enhanceImage(self,image,path,pf):
+        brightness = ImageEnhance.Brightness(image)
+        image = brightness.enhance(float(self.brightness))
+        contrast = ImageEnhance.Contrast(image)
+        image = contrast.enhance(float(self.contrast))
+        colour = ImageEnhance.Color(image)
+        image = colour.enhance(float(self.color))
+        sharpness = ImageEnhance.Sharpness(image)
+        image = sharpness.enhance(float(self.sharpness))
+        print("image saved ",self.ui.scanpath.text()+"/"+pf)
+        image.save(path+pf)
 
     @pyqtSlot()
     def leditcolor(self):
@@ -468,7 +485,9 @@ class MainWindow(QMainWindow):
 
 
             print(self.tempocr.name)
-            pdfname = self.ocrFiles[0].removesuffix("_1.png")
+            ## works in python 3.9+
+            #pdfname = self.ocrFiles[0].removesuffix("_1.png")
+            pdfname, suff = self.ocrFiles[0].rsplit("_1.png")
             print(pdfname)
             ### this runs in its own process
             self.progressDlg.setLabelText("OCR Process finishing ...")
@@ -497,7 +516,7 @@ class MainWindow(QMainWindow):
         pix = ImageQt.ImageQt(im.convert('RGBA'))
         #self.configWin.im = im
         #self.configWin.ui.view.setPixmap(self.configWin.pixmap.fromImage(pix))
-        self.configWin.pixmapItem.setPixmap(self.configWin.pixmap.fromImage(pix))
+        self.configWin.pixmapItem.setPixmap(QPixmap.fromImage(pix))
         self.configWin.ui.view.fitInView(self.configWin.pixmapItem,Qt.KeepAspectRatio)
         self.configWin.pixmapItem.grabMouse()
         self.configWin.setBufferImage()

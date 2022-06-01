@@ -278,3 +278,6 @@ class ConfigWindow(QWidget):
                 if self.pixmapItemScale > 0.15:
                     self.pixmapItem.setScale(self.pixmapItemScale-0.01)
 
+    def closeEvent(self, event):
+        self.scene.clear()
+        event.accept()
