@@ -76,7 +76,7 @@ def enhance_image(file):
         with image.clone() as enhance:
             enhance.color_matrix(matrix)
             enhance.normalize()
-            enhance.level(0.1,0.9)
+            enhance.level(0.1,0.9,gamma=0.7)
             enhance.sharpen(1)
             enhance.save(filename=file)
 

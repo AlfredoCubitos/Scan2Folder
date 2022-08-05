@@ -21,7 +21,7 @@ The OCR-Process will do the following steps:
 2. Crop the image
 3. Check text orientation
 4. Start ocr
-5. Create the PDF
+5. Create searchable PDF
 
 You can define the crop size in the configuration dialog
 

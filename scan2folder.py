@@ -12,8 +12,8 @@ import sane
 from urllib.request import urlopen
 import bs4
 import glob
-import os
-from PIL import ImageEnhance, ImageQt
+import os, io
+from PIL import ImageEnhance
 import ocrtools as ocrt
 import tempfile
 
@@ -61,8 +61,8 @@ class MainWindow(QMainWindow):
 
         self.progressBar = None
 
-        self.configWin = ConfigWindow(self)
-        self.configWin.ui.scanButton.clicked.connect(self.configScan)
+        #self.configWin = ConfigWindow(self)
+        #self.configWin.ui.scanButton.clicked.connect(self.configScan)
         
 
                 
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.ui.btnOcr.clicked.connect(self.ocr_startProcess)
 
         self.ui.actionCalibrate.triggered.connect(self.configureWindow)
-        self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
+        #self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
 
 
         # Change Color back after error
@@ -96,43 +96,32 @@ class MainWindow(QMainWindow):
         self.brightness = 1
         self.color = 1
         self.sharpness = 1
+        self.gamma = 1
         self.scanPath = ""
         self.ocr = False
         self.crop = False
         self.cropSize = {'left':1,'top':1,'width':1,'height':1}
         self.ocrFiles = []
         self.tempocr = None
-
+        self.configWin = None
 
 
         if self.settings.contains("ocr"):
-            print("Load: ",self.settings.value('ocr'))
             if self.settings.value('ocr') == 'true':
                 self.ocr = True
                 self.ui.actionEnable_OCR.setChecked(True)
-                self.configWin.ui.OCR_Enabled.setChecked(True)
-                self.configWin.ui.OCR_Box.setEnabled(True)
-
             else:
                 self.ui.actionEnable_OCR.setChecked(False)
-                self.configWin.ui.OCR_Enabled.setChecked(False)
-                self.configWin.ui.OCR_Box.setEnabled(False)
             ## connect Signal here and not before loading settings
             ## if not, you never will get the stored value because QAction is triggered when ever the value changed
-            self.configWin.ui.OCR_Enabled.stateChanged.connect(self.ocrConfig)
 
         if self.settings.contains('crop'):
             if self.settings.value('crop') == 'true':
                 self.crop = True
-            self.configWin.ui.checkCrop.setChecked(self.crop)
 
         if self.settings.contains('cropSize'):
             #print(self.settings.value('cropSize'))
             self.cropSize = self.settings.value('cropSize')
-            self.configWin.ui.cropX.setValue(self.cropSize['left'])
-            self.configWin.ui.cropY.setValue(self.cropSize['top'])
-            self.configWin.ui.cropW.setValue(self.cropSize['width'])
-            self.configWin.ui.cropH.setValue(self.cropSize['height'])
 
 
         if self.settings.contains("path"):
@@ -144,20 +133,57 @@ class MainWindow(QMainWindow):
             self.brightness = self.settings.value('brightness')
             
             self.contrast = self.settings.value('contrast')
+
+        if self.settings.contains('color'):
+            self.color = self.settings.value('color')
+
+        if self.settings.contains("sharpness"):
+            self.sharpness = self.settings.value('sharpness')
+
+        if self.settings.contains("gamma"):
+            self.gamma = self.settings.value('gamma')
+
+
+    def setConfigWinSettings(self):
+
+        if self.settings.contains("ocr"):
+            if self.settings.value('ocr') == 'true':
+                self.configWin.ui.OCR_Enabled.setChecked(True)
+                self.configWin.ui.OCR_Box.setEnabled(True)
+
+            else:
+                self.configWin.ui.OCR_Enabled.setChecked(False)
+                self.configWin.ui.OCR_Box.setEnabled(False)
+            ## connect Signal here and not before loading settings
+            ## if not, you never will get the stored value because QAction is triggered when ever the value changed
+            self.configWin.ui.OCR_Enabled.stateChanged.connect(self.ocrConfig)
+
+        if self.settings.contains('crop'):
+            self.configWin.ui.checkCrop.setChecked(self.crop)
+
+        if self.settings.contains('cropSize'):
+            self.configWin.ui.cropX.setValue(self.cropSize['left'])
+            self.configWin.ui.cropY.setValue(self.cropSize['top'])
+            self.configWin.ui.cropW.setValue(self.cropSize['width'])
+            self.configWin.ui.cropH.setValue(self.cropSize['height'])
+
+        if self.settings.contains('contrast'):
             self.configWin.ui.brigthnessLcd.setValue(float(self.brightness))
             self.configWin.ui.brigthnesSlider.setValue(int(float(self.brightness)*10))
             self.configWin.ui.contrastLcd.setValue(float(self.contrast))
             self.configWin.ui.contrastSlider.setValue(int(float(self.contrast)*10))
 
         if self.settings.contains('color'):
-            self.color = self.settings.value('color')
             self.configWin.ui.colorLcd.setValue(float(self.color))
             self.configWin.ui.colorSlider.setValue(int(float(self.color)*10))
 
         if self.settings.contains("sharpness"):
-            self.sharpness = self.settings.value('sharpness')
             self.configWin.ui.sharpnessLcd.setValue(float(self.sharpness))
             self.configWin.ui.sharpnessSlider.setValue(int(float(self.sharpness)*10))
+
+        if self.settings.contains("gamma"):
+            self.configWin.ui.gammaLcd.setValue(float(self.gamma))
+            self.configWin.ui.gammaSlider.setValue(int(float(self.gamma)*10))
 
     def closeEvent(self, event):
         #if not set, process keeps running in background
@@ -367,6 +393,11 @@ class MainWindow(QMainWindow):
         image = colour.enhance(float(self.color))
         sharpness = ImageEnhance.Sharpness(image)
         image = sharpness.enhance(float(self.sharpness))
+
+        print("Gamma: ", self.gamma)
+        gamma = float(self.gamma)
+        image = image.point(self.gamma_table( gamma, gamma, gamma))
+
         print("image saved ",self.ui.scanpath.text()+"/"+pf)
         image.save(path+pf)
 
@@ -436,7 +467,12 @@ class MainWindow(QMainWindow):
             self.ui.btnStartscan.setStyleSheet(self.btnStyle)
 
     
-    def configureWindow(self):  
+    def configureWindow(self):
+
+        self.configWin = ConfigWindow(self)
+        self.configWin.ui.scanButton.clicked.connect(self.configScan)
+        self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
+        self.setConfigWinSettings()
 
         if self.dev is not None:
             self.configWin.ui.scanButton.setEnabled(True)
@@ -456,6 +492,12 @@ class MainWindow(QMainWindow):
         self.progressDlg.setModal(True)
         self.startThread(self.ocr_process,None,self.ocr_stopped)
 
+    def gamma_table(self, gamma_r, gamma_g, gamma_b, gain_r=1.0, gain_g=1.0, gain_b=1.0):
+        r_tbl = [min(255, int((x / 255.) ** (1. / gamma_r) * gain_r * 255.)) for x in range(256)]
+        g_tbl = [min(255, int((x / 255.) ** (1. / gamma_g) * gain_g * 255.)) for x in range(256)]
+        b_tbl = [min(255, int((x / 255.) ** (1. / gamma_b) * gain_b * 255.)) for x in range(256)]
+
+        return r_tbl + g_tbl + b_tbl
 
     def ocr_process(self):
 
@@ -488,7 +530,7 @@ class MainWindow(QMainWindow):
             ## works in python 3.9+
             #pdfname = self.ocrFiles[0].removesuffix("_1.png")
             pdfname, suff = self.ocrFiles[0].rsplit("_1.png")
-            print(pdfname)
+            # print(pdfname)
             ### this runs in its own process
             self.progressDlg.setLabelText("OCR Process finishing ...")
             ocrt.create_pdf(self.tempocr.name, pdfname)
@@ -509,14 +551,19 @@ class MainWindow(QMainWindow):
         self.progressDlg.close()
     
     def configScan(self):
+        pixmap = QPixmap()
         self.dev.resolution=int(self.ui.resolutions.currentText())
         self.dev.mode=self.checkScanMode()
         self.dev.start()
         im = self.dev.snap()
-        pix = ImageQt.ImageQt(im.convert('RGBA'))
-        #self.configWin.im = im
-        #self.configWin.ui.view.setPixmap(self.configWin.pixmap.fromImage(pix))
-        self.configWin.pixmapItem.setPixmap(QPixmap.fromImage(pix))
+
+        convertImg = io.BytesIO()
+        im.save(convertImg,"BMP")
+        pixmap.loadFromData(convertImg.getvalue(), "BMP")
+        self.configWin.pixmapItem.setPixmap(pixmap)
+
+
+        #self.configWin.pixmapItem.setPixmap(QPixmap.fromImage(pix))
         self.configWin.ui.view.fitInView(self.configWin.pixmapItem,Qt.KeepAspectRatio)
         self.configWin.pixmapItem.grabMouse()
         self.configWin.setBufferImage()
@@ -529,12 +576,14 @@ class MainWindow(QMainWindow):
         self.contrast       = self.configWin.ui.contrastLcd.value()
         self.color          = self.configWin.ui.colorLcd.value()
         self.sharpness      = self.configWin.ui.sharpnessLcd.value()
+        self.gamma          = self.configWin.ui.gammaLcd.value()
         self.crop           = self.configWin.ui.checkCrop.isChecked()
 
         self.settings.setValue('brightness',self.brightness)
         self.settings.setValue('contrast',self.contrast)
         self.settings.setValue('color',self.color)
         self.settings.setValue('sharpness',self.sharpness)
+        self.settings.setValue('gamma',self.gamma)
         self.settings.setValue('ocr', self.ocr)
         self.settings.setValue('crop', self.crop)
         self.settings.setValue('cropSize',self.cropSize)
@@ -555,8 +604,9 @@ class MainWindow(QMainWindow):
         if self.tempocr is not None:
             if os.path.exists(self.tempocr.name):
                 os.unlink(self.tempocr.name)
-        if self.configWin.isVisible():
-            self.configWin.close()
+        if self.configWin is not None:
+            if self.configWin.isVisible():
+                self.configWin.close()
 
 
         e.accept()

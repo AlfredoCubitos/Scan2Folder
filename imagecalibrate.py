@@ -3,8 +3,8 @@ import sys, io
 from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt, QPoint, QRect, QPointF, QVariant, QMimeData, QSize
-from PIL import ImageEnhance, Image, ImageQt
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt, QPoint, QRect, QPointF, QVariant, QMimeData, QSize, QIODevice
+from PIL import ImageEnhance, Image
 import numpy as np
 import cv2
 
@@ -87,6 +87,10 @@ class ConfigWindow(QWidget):
 
         self.ui.colorLcd.valueChanged.connect(self.setColorSlider)
         self.ui.sharpnessLcd.valueChanged.connect(self.setSharpnessSlider)
+
+        self.ui.gammaLcd.valueChanged.connect(self.setGammaSlider)
+        self.ui.gammaSlider.valueChanged.connect(self.gammaSlot)
+
         self.ui.checkCrop.stateChanged.connect(self.setCrop)
 
 
@@ -105,8 +109,9 @@ class ConfigWindow(QWidget):
         self.ui.view.setScene(self.scene)
         #self.ui.view.fitInView(self.pixmapItem,Qt.KeepAspectRatio)
         #self.pixmap.load("Calibrate_Test_1.png")
-        #self.buffer = QBuffer()
-        self.pilBufferPath = "/tmp/scan2foldertempimg.png"
+        self.qbuffer = QBuffer()
+
+        self.pilBufferPath = io.BytesIO()
         self.pilBufferImg = Image.new('RGBA',(1,1))
 
 
@@ -116,7 +121,21 @@ class ConfigWindow(QWidget):
         self.imageTypes = ['png','jpg','tiff','tif']
 
 
+    @pyqtSlot(int)
+    def gammaSlot(self, value):
+        val =value/10
+        self.ui.gammaLcd.blockSignals(True)
+        self.ui.gammaLcd.setValue(val)
+        self.ui.gammaLcd.blockSignals(False)
+        self.enhanceImage()
 
+    @pyqtSlot(float)
+    def setGammaSlider(self,val):
+        value = val*10
+        self.ui.gammaSlider.blockSignals(True)
+        self.ui.gammaSlider.setValue(int(value))
+        self.ui.gammaSlider.blockSignals(False)
+        self.ui.gammaSlider.valueChanged.emit(int(value))
 
     @pyqtSlot(int)
     def colorSlot(self,value):
@@ -232,13 +251,26 @@ class ConfigWindow(QWidget):
         self.ui.cropW.setValue(srect.width()-(offset*2))
         pass
 
+    def gamma_table(self, bands, gamma_r, gamma_g, gamma_b, gamma_a, gain_r=1.0, gain_g=1.0, gain_b=1.0, gain_a=1.0):
+        r_tbl = [min(255, int((x / 255.) ** (1. / gamma_r) * gain_r * 255.)) for x in range(256)]
+        g_tbl = [min(255, int((x / 255.) ** (1. / gamma_g) * gain_g * 255.)) for x in range(256)]
+        b_tbl = [min(255, int((x / 255.) ** (1. / gamma_b) * gain_b * 255.)) for x in range(256)]
+        a_tbl = [min(255, int((x / 255.) ** (1. / gamma_a) * gain_a * 255.)) for x in range(256)]
+
+        if len(bands) == 3:
+            return r_tbl + g_tbl + b_tbl
+        else:
+            return r_tbl + g_tbl + b_tbl + a_tbl
 
     def enhanceImage(self):
+
         cont = self.ui.contrastSlider.value()/10
         sharp = self.ui.sharpnessSlider.value()/10
         bright = self.ui.brigthnesSlider.value()/10
         color = self.ui.colorSlider.value()/10
+        gamma = self.ui.gammaSlider.value()/10
 
+        convertImg = io.BytesIO()
         pilImg = self.pilBufferImg
 
         brightness = ImageEnhance.Brightness(pilImg)
@@ -250,23 +282,36 @@ class ConfigWindow(QWidget):
         sharpness = ImageEnhance.Sharpness(pilImg)
         pilImg = sharpness.enhance(sharp)
 
-        self.pixmapItem.setPixmap(self.pixmap.fromImage(ImageQt.ImageQt(pilImg.convert('RGBA'))))
-    
+       # print("Bands: ",pilImg.getbands())
+        bands = pilImg.getbands()
+        gammaImg = pilImg.point(self.gamma_table(bands, gamma, gamma, gamma,gamma))
+        pilImg = gammaImg.copy()
+
+
+        pilImg.save(convertImg,"BMP")
+        self.pixmap.loadFromData(convertImg.getvalue(), "BMP")
+        self.pixmapItem.setPixmap(self.pixmap)
 
         
     def setBufferImage(self):
+
+        self.qbuffer.open(QIODevice.ReadWrite)
+
         img = self.pixmapItem.pixmap()
-        #self.buffer.open(QBuffer.ReadWrite)
-        #img.save(self.buffer,"PNG")
-        img.save(self.pilBufferPath,"PNG")
+        img.save(self.qbuffer,"PNG")
+
+        self.pilBufferPath.write(self.qbuffer.data())
+        self.qbuffer.close()
+        self.pilBufferPath.seek(0)
         self.pilBufferImg = Image.open(self.pilBufferPath)
-        #self.buffer.close()
 
     def wheelEvent(self, event):
         point = event.position()
         degrees = event.angleDelta() / 8
 
         self.pixmapItemScale = self.pixmapItem.scale()
+
+        print(self.pixmapItemScale)
 
         if self.pixmapItem.isUnderMouse():
 
