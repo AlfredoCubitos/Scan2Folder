@@ -389,8 +389,9 @@ class MainWindow(QMainWindow):
         image = brightness.enhance(float(self.brightness))
         contrast = ImageEnhance.Contrast(image)
         image = contrast.enhance(float(self.contrast))
-        colour = ImageEnhance.Color(image)
-        image = colour.enhance(float(self.color))
+        if self.dev.mode == "color":
+            colour = ImageEnhance.Color(image)
+            image = colour.enhance(float(self.color))
         sharpness = ImageEnhance.Sharpness(image)
         image = sharpness.enhance(float(self.sharpness))
 
@@ -549,6 +550,7 @@ class MainWindow(QMainWindow):
     def ocr_stopped(self):
         print("OCR finished")
         self.progressDlg.close()
+        self.ui.btnOcr.setEnabled(False)
     
     def configScan(self):
         pixmap = QPixmap()
