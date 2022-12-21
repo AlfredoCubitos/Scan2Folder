@@ -12,9 +12,15 @@ It also provides image enhancement features.
 >*Note: in this version only the first scanner is used*
 
 
-**NEW:** OCR processing and PDF-Document creation from your scanns.
+**NEW:**    OCR processing and PDF-Document creation or from local images.
+> The *Scan2Folder*-Button has a new function.  
+> By pressing the button it opens a file dialog where you can select your image files  
+> you want to procees.  
+> *Note:* the filenames must be numbered like this `<filename>_[1..n].png`
 
-After you finished scanning, you can start an OCR-process
+OCR processing and PDF-Document creation from your scanns.
+
+After you finished scanning, you can start an OCR-Process
 The OCR-Process will do the following steps:
 
 1. Deskew each page
@@ -72,6 +78,7 @@ Have a look at the [pyinstaller doc](https://pyinstaller.readthedocs.io) for mor
 
 ### New Features
 
+* creates PDF from local images
 * spec file for creating stand alone binaries
 * Image name is cleared when stopped a scan session
 * Image name has now auto complete, to avoid overwrite existing files

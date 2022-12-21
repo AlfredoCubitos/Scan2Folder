@@ -3,10 +3,10 @@
 block_cipher = None
 
 
-a = Analysis(['../scan2folder.py'],
-             pathex=['../'],
+a = Analysis(['../Scan2Folder/scan2folder.py'],
+             pathex=['/home/manni/Devel/Python/Scan2Folder/Execute'],
              binaries=[],
-             datas=[('../*.ui', '.'),('../images/*.svg','.')],
+             datas=[('../Scan2Folder/*.ui', '.'),('../Scan2Folder/images/*.svg','.')],
              hiddenimports=['packaging.requirements'],
              hookspath=[],
              runtime_hooks=[],

@@ -8,5 +8,5 @@ Pillow
 wand
 pytesseract
 numpy
-
+ocrtools
 

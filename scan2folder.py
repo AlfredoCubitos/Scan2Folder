@@ -71,7 +71,9 @@ class MainWindow(QMainWindow):
 
         self.ui.btnOpenDir.clicked.connect(self.openDir)
         self.ui.btnStartscan.clicked.connect(self.startScanJob)
-        self.ui.btnOcr.clicked.connect(self.ocr_startProcess)
+        self.ui.btnOcr.clicked.connect(self.ocr2pdf)
+        ## for testing enable button
+        self.ui.btnOcr.setEnabled(True)
 
         self.ui.actionCalibrate.triggered.connect(self.configureWindow)
         #self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
@@ -104,6 +106,7 @@ class MainWindow(QMainWindow):
         self.ocrFiles = []
         self.tempocr = None
         self.configWin = None
+
 
 
         if self.settings.contains("ocr"):
@@ -306,6 +309,7 @@ class MainWindow(QMainWindow):
             count += 1
             if count > 2:
                 self.is_dev = False
+
                 self.statusBar().showMessage("No Scanner connected!")
     
     def commonThreadEnd(self):
@@ -321,6 +325,11 @@ class MainWindow(QMainWindow):
 
         if self.dev_connected:
             self.startThread(self.scanDocuments,None,self.scanDocThreadEnded)
+        else:
+            msg = QMessageBox()
+            msg.setText("No Scanner Connected")
+            msg.setIcon(QMessageBox.Warning)
+            msg.exec()
 
     def setScannerStatus(self):
         if self.dev_connected:
@@ -444,11 +453,12 @@ class MainWindow(QMainWindow):
             self.ui.filename.clear()
 
             if self.ocr and len(self.ocrFiles) > 0:
-                self.ui.btnOcr.setEnabled(True)
-                self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
-                for f in self.ocrFiles:
-                    self.tempocr.write(str(f+"\n").encode())
-                self.tempocr.close()
+                #self.ui.btnOcr.setEnabled(True)
+                self.ocr_StrartDlg()
+                # self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
+                # for f in self.ocrFiles:
+                #     self.tempocr.write(str(f+"\n").encode())
+                # self.tempocr.close()
     
     def setScanButton(self,status):
 
@@ -484,13 +494,29 @@ class MainWindow(QMainWindow):
         
         self.configWin.show()
 
+    def ocr_StrartDlg(self):
+        ocr_dlg = QMessageBox()
+        ocr_dlg.setText("Start OCR-Process?")
+        ocr_dlg.setInformativeText("Create a searchable PDF-Document or stay with images only")
+        ocr_dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No);
+        ocr_dlg.setDefaultButton(QMessageBox.Yes)
+        ocr_dlg.setIcon(QMessageBox.Question)
+        ret = ocr_dlg.exec()
+
+        if ret == QMessageBox.Yes:
+            self.ocr_startProcess()
+
+
     def ocr_startProcess(self):
         self.progressDlg = QProgressDialog(self)
+
         self.progressDlg.setWindowTitle("OCR Process")
         self.progressDlg.setLabelText("OCR Process in Progress ...")
         self.progressDlg.setAutoClose(False)
         self.progressDlg.setAutoReset(False)
         self.progressDlg.setModal(True)
+
+
         self.startThread(self.ocr_process,None,self.ocr_stopped)
 
     def gamma_table(self, gamma_r, gamma_g, gamma_b, gain_r=1.0, gain_g=1.0, gain_b=1.0):
@@ -502,7 +528,12 @@ class MainWindow(QMainWindow):
 
     def ocr_process(self):
 
+
+
         if len(self.ocrFiles) > 0:
+
+            self.tempocr =  tempfile.NamedTemporaryFile(delete=False)
+
 
             val = 0
             ### add one more for pdf create process
@@ -511,6 +542,8 @@ class MainWindow(QMainWindow):
 
             for f in self.ocrFiles:
                 val += 1
+                self.tempocr.write(str(f+"\n").encode())
+
 
                 self.progressDlg.setValue(val)
 
@@ -525,6 +558,7 @@ class MainWindow(QMainWindow):
                 #TODO: if is checked
                 ocrt.check_orientation(f)
 
+            self.tempocr.close()
 
 
             print(self.tempocr.name)
@@ -549,8 +583,20 @@ class MainWindow(QMainWindow):
 
     def ocr_stopped(self):
         print("OCR finished")
+        self.statusBar().showMessage("OCR finished")
         self.progressDlg.close()
         self.ui.btnOcr.setEnabled(False)
+
+    def ocr2pdf(self):
+        fileDlg = QFileDialog(self)
+        fileDlg.setNameFilter("Images (*.png .jpg)")
+        fileDlg.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        fileDlg.setOption(QFileDialog.DontUseNativeDialog)
+
+        if fileDlg.exec():
+            self.ocrFiles = fileDlg.selectedFiles()
+            self.ocr_startProcess()
+        pass
     
     def configScan(self):
         pixmap = QPixmap()
