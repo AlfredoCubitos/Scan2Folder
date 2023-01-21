@@ -11,8 +11,10 @@ It also provides image enhancement features.
 
 >*Note: in this version only the first scanner is used*
 
+**NEW:**    Config profiles
+> If you want scan document with different page sizes it may usefull to save each configuration into a seperate profile
 
-**NEW:**    OCR processing and PDF-Document creation or from local images.
+OCR processing and PDF-Document creation or from local images.
 > The *Scan2Folder*-Button has a new function.  
 > By pressing the button it opens a file dialog where you can select your image files  
 > you want to procees.  

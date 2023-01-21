@@ -106,7 +106,16 @@ class MainWindow(QMainWindow):
         self.ocrFiles = []
         self.tempocr = None
         self.configWin = None
+        self.defaultGroup = self.settings.value("defaultGroup")
 
+        self.getSettings(self.defaultGroup)
+        #if len(self.scanPath) > 1:
+        #   self.createCompleter()
+
+    def getSettings(self, group):
+        print(self.settings.childGroups())
+        self.settings.beginGroup(group)
+        print(self.settings.group())
 
 
         if self.settings.contains("ocr"):
@@ -146,8 +155,17 @@ class MainWindow(QMainWindow):
         if self.settings.contains("gamma"):
             self.gamma = self.settings.value('gamma')
 
+        self.settings.endGroup()
 
     def setConfigWinSettings(self):
+
+        self.configWin.ui.profileSelect.clear()
+        self.configWin.ui.profileSelect.addItem("default")
+        self.configWin.ui.profileSelect.addItems(self.settings.childGroups())
+        if self.defaultGroup == "":
+            self.configWin.ui.profileSelect.setCurrentText("default")
+        else:
+            self.configWin.ui.profileSelect.setCurrentText(self.defaultGroup)
 
         if self.settings.contains("ocr"):
             if self.settings.value('ocr') == 'true':
@@ -187,6 +205,46 @@ class MainWindow(QMainWindow):
         if self.settings.contains("gamma"):
             self.configWin.ui.gammaLcd.setValue(float(self.gamma))
             self.configWin.ui.gammaSlider.setValue(int(float(self.gamma)*10))
+
+    def configureWindow(self):
+
+        self.configWin = ConfigWindow(self)
+
+        self.configWin.ui.scanButton.clicked.connect(self.configScan)
+        self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
+        self.setConfigWinSettings()
+        ## Connect the Combox after setConfigWinSettings
+        ## if not you ran into an RecursionError!!
+        self.configWin.ui.profileSelect.currentIndexChanged.connect(self.configWinUpdate)
+
+        if self.dev is not None:
+            self.configWin.ui.scanButton.setEnabled(True)
+            self.configWin.ui.scanButton.setText("Start Scan")
+        else:
+            self.configWin.ui.scanButton.setEnabled(False)
+            self.configWin.ui.scanButton.setText("Sart Scan Service first")
+
+        self.configWin.show()
+
+    @pyqtSlot(int)
+    def configWinUpdate(self,pos):
+        group = self.configWin.ui.profileSelect.currentText()
+        idx = self.configWin.ui.profileSelect.currentIndex()
+
+        if group == "default":
+            group = ""
+
+        ## Disconnect the Combox before you add new values
+        ## if not you ran into an RecursionError!!
+        self.configWin.ui.profileSelect.currentIndexChanged.disconnect()
+
+        self.getSettings(group)
+        self.setConfigWinSettings()
+        self.configWin.ui.profileSelect.setCurrentIndex(idx)
+        ## Connect the Combox after setConfigWinSettings
+        ## if not you ran into an RecursionError!!
+        self.configWin.ui.profileSelect.currentIndexChanged.connect(self.configWinUpdate)
+        pass
 
     def closeEvent(self, event):
         #if not set, process keeps running in background
@@ -236,6 +294,7 @@ class MainWindow(QMainWindow):
         self.createCompleter()
 
     def createCompleter(self):
+
         ff = glob.glob(self.scanPath+"/*.pdf")
         files = []
         for f in ff:
@@ -477,22 +536,6 @@ class MainWindow(QMainWindow):
             self.ui.btnStartscan.setText("Sart Scan")
             self.ui.btnStartscan.setStyleSheet(self.btnStyle)
 
-    
-    def configureWindow(self):
-
-        self.configWin = ConfigWindow(self)
-        self.configWin.ui.scanButton.clicked.connect(self.configScan)
-        self.configWin.ui.saveButton.clicked.connect(self.saveConfig)
-        self.setConfigWinSettings()
-
-        if self.dev is not None:
-            self.configWin.ui.scanButton.setEnabled(True)
-            self.configWin.ui.scanButton.setText("Start Scan")
-        else:
-            self.configWin.ui.scanButton.setEnabled(False)
-            self.configWin.ui.scanButton.setText("Sart Scan Service first")
-        
-        self.configWin.show()
 
     def ocr_StrartDlg(self):
         ocr_dlg = QMessageBox()
@@ -627,6 +670,15 @@ class MainWindow(QMainWindow):
         self.gamma          = self.configWin.ui.gammaLcd.value()
         self.crop           = self.configWin.ui.checkCrop.isChecked()
 
+        group = self.configWin.ui.profileSelect.currentText()
+
+        if group == "default":
+            group = ""
+
+        self.settings.setValue('defaultGroup',group)
+
+        self.settings.beginGroup(group)
+
         self.settings.setValue('brightness',self.brightness)
         self.settings.setValue('contrast',self.contrast)
         self.settings.setValue('color',self.color)
@@ -636,6 +688,7 @@ class MainWindow(QMainWindow):
         self.settings.setValue('crop', self.crop)
         self.settings.setValue('cropSize',self.cropSize)
         self.settings.sync()
+        self.settings.endGroup()
         self.configWin.close()
 
     @pyqtSlot(int)

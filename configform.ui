@@ -18,17 +18,19 @@
     <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="7" column="2">
-    <widget class="QPushButton" name="scanButton">
-     <property name="toolTip">
-      <string>Enabled when connected to scanner</string>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
      </property>
      <property name="text">
-      <string>Scan</string>
+      <string>Image Enhacement</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="2" rowspan="7">
+   <item row="0" column="2" rowspan="8">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Image View</string>
@@ -44,8 +46,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>409</width>
-           <height>564</height>
+           <width>397</width>
+           <height>565</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -66,33 +68,31 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Image Enhacement</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
+   <item row="8" column="0">
     <widget class="QPushButton" name="saveButton">
      <property name="text">
       <string>Save</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QCheckBox" name="OCR_Enabled">
      <property name="text">
       <string>Enable OCR</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="8" column="2">
+    <widget class="QPushButton" name="scanButton">
+     <property name="toolTip">
+      <string>Enabled when connected to scanner</string>
+     </property>
+     <property name="text">
+      <string>Scan</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
     <widget class="QGroupBox" name="OCR_Box">
      <property name="enabled">
       <bool>false</bool>
@@ -221,7 +221,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" rowspan="2" colspan="2">
+   <item row="2" column="0" rowspan="2" colspan="2">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="minimumSize">
       <size>
@@ -559,6 +559,31 @@
         </property>
         <property name="value">
          <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Profile</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QComboBox" name="profileSelect">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="currentText">
+         <string/>
+        </property>
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+        <property name="placeholderText">
+         <string>default</string>
         </property>
        </widget>
       </item>
