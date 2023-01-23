@@ -255,8 +255,10 @@ class MainWindow(QMainWindow):
         fileDlg = QFileDialog()
         self.scanFolder = fileDlg.getExistingDirectory(self,'Scan Folder',self.scanFolder, QFileDialog.DontUseNativeDialog)
         self.ui.scanpath.setText(self.scanFolder)
+        self.settings.beginGroup(self.defaultGroup)
         self.settings.setValue("path",self.scanFolder)
         self.settings.sync()
+        self.settings.endGroup()
         
 
 
@@ -590,8 +592,7 @@ class MainWindow(QMainWindow):
 
                 self.progressDlg.setValue(val)
 
-                #TODO: if is checked
-                ocrt.deskew(f)
+
                 #TODO: if is checked
                 #NOTE: this is crop and resize in one step
                 #      size and dpi are predifined to A4 300
@@ -600,14 +601,16 @@ class MainWindow(QMainWindow):
                     ocrt.crop_resize(f,self.cropSize["left"],self.cropSize["top"], self.cropSize["width"],self.cropSize["height"])
                 #TODO: if is checked
                 ocrt.check_orientation(f)
+                #TODO: if is checked
+                ocrt.deskew(f)
 
             self.tempocr.close()
 
 
             print(self.tempocr.name)
             ## works in python 3.9+
-            #pdfname = self.ocrFiles[0].removesuffix("_1.png")
-            pdfname, suff = self.ocrFiles[0].rsplit("_1.png")
+            pdfname = self.ocrFiles[0].removesuffix("_1.png")
+            #pdfname, suff = self.ocrFiles[0].rsplit("_1.png")
             # print(pdfname)
             ### this runs in its own process
             self.progressDlg.setLabelText("OCR Process finishing ...")
@@ -669,6 +672,10 @@ class MainWindow(QMainWindow):
         self.sharpness      = self.configWin.ui.sharpnessLcd.value()
         self.gamma          = self.configWin.ui.gammaLcd.value()
         self.crop           = self.configWin.ui.checkCrop.isChecked()
+        self.cropSize['left'] = self.configWin.ui.cropX.value()
+        self.cropSize['top']  =  self.configWin.ui.cropY.value()
+        self.cropSize['width'] = self.configWin.ui.cropW.value()
+        self.cropSize['height'] = self.configWin.ui.cropH.value()
 
         group = self.configWin.ui.profileSelect.currentText()
 
@@ -687,6 +694,7 @@ class MainWindow(QMainWindow):
         self.settings.setValue('ocr', self.ocr)
         self.settings.setValue('crop', self.crop)
         self.settings.setValue('cropSize',self.cropSize)
+        #self.settings.setValue("path",self.scanPath)
         self.settings.sync()
         self.settings.endGroup()
         self.configWin.close()
