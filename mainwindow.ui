@@ -207,26 +207,6 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="2">
-        <widget class="QLabel" name="statusLed">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/images/square_red.svg</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Status</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QComboBox" name="resolutions">
          <property name="styleSheet">
@@ -243,12 +223,15 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_4">
+       <item row="0" column="2">
+        <widget class="QLabel" name="label">
          <property name="text">
-          <string>Resolution</string>
+          <string>Status</string>
          </property>
         </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cmbBoxOcr"/>
        </item>
        <item row="1" column="1">
         <spacer name="horizontalSpacer_2">
@@ -263,6 +246,33 @@
          </property>
         </spacer>
        </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Resolution</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="statusLed">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="resources.qrc">:/images/square_red.svg</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>OCR-Profile: </string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -271,21 +281,8 @@
       <property name="title">
        <string>Process</string>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QToolButton" name="btnStartscan">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(236, 236, 236);</string>
-         </property>
-         <property name="text">
-          <string>Start Scan</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="2">
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -298,13 +295,26 @@
          </property>
         </spacer>
        </item>
-       <item>
+       <item row="0" column="3">
         <widget class="QPushButton" name="btnOcr">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="text">
           <string>OCR2PDF</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btnStartscan">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(236, 236, 236);</string>
+         </property>
+         <property name="text">
+          <string>Start Scan</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -319,7 +329,7 @@
      <x>0</x>
      <y>0</y>
      <width>313</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCalibrate">

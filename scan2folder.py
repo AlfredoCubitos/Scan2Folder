@@ -112,6 +112,17 @@ class MainWindow(QMainWindow):
         #if len(self.scanPath) > 1:
         #   self.createCompleter()
 
+        self.ui.cmbBoxOcr.addItem("default")
+        self.ui.cmbBoxOcr.addItems(self.settings.childGroups())
+
+
+        if self.defaultGroup == "":
+            self.ui.cmbBoxOcr.setCurrentText("default")
+        else:
+            self.ui.cmbBoxOcr.setCurrentText(self.defaultGroup)
+
+        self.ui.cmbBoxOcr.currentIndexChanged.connect(self.profileChanged)
+
     def getSettings(self, group):
         print(self.settings.childGroups())
         self.settings.beginGroup(group)
@@ -162,6 +173,9 @@ class MainWindow(QMainWindow):
         self.configWin.ui.profileSelect.clear()
         self.configWin.ui.profileSelect.addItem("default")
         self.configWin.ui.profileSelect.addItems(self.settings.childGroups())
+
+
+
         if self.defaultGroup == "":
             self.configWin.ui.profileSelect.setCurrentText("default")
         else:
@@ -471,6 +485,11 @@ class MainWindow(QMainWindow):
 
         print("image saved ",self.ui.scanpath.text()+"/"+pf)
         image.save(path+pf)
+
+    @pyqtSlot()
+    def profileChanged(self):
+        group = self.ui.cmbBoxOcr.currentText()
+        self.getSettings(group)
 
     @pyqtSlot()
     def leditcolor(self):
