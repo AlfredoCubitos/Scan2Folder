@@ -1,28 +1,22 @@
 import re
 from wand.image import Image
+from PIL import Image as PImage
 import pytesseract
 from pytesseract import Output
 import numpy as np
+import json
+import os
 
 ## pagesize definitions
 ## ANSI: https://pixelsconverter.com/us-paper-sizes-to-pixels
 ## DIN:  https://www.a4-size.com/a4-size-in-pixels
 ##             dpi:(width,height)
 
-pagesize = {
-        "A4":{
-            "Portrait":{
-                72:(586,842),
-                96:(794,1123),
-                150:(1240,1754),
-                300:(2480,3508),
-                600:(4961,7016)
-                },
-            "Landscape":{}
-            }
-    }
+js_path = os.path.join(os.path.dirname(__file__),"pagesizes.json")
+js = open(js_path, 'r', encoding="utf-8")
+pagesize = json.load(js)
 
-#print(pagesize['A4']['Portrait'][300])
+#print(pagesize['A4'][300])
 
 
 def check_orientation(file):
@@ -31,11 +25,13 @@ def check_orientation(file):
         osd = pytesseract.image_to_osd(img)
         angle = re.search('(?<=Rotate: )\d+', osd).group(0)
         #script = re.search('(?<=Script: )\w+', osd).group(0)
-
+    
         if int(angle) > 0:
             with image.clone() as rotated:
                 rotated.rotate((int(angle)*-1))
                 rotated.save(filename=file)
+    
+    
 
 def deskew(file):
     with Image(filename=file) as image:
@@ -52,12 +48,15 @@ def crop(file, left=0, top=0, width=None, height=None):
 ###
 # file: image File
 # size: page Size e.g. "A4"
-# ori:  page orintation
+# ori:  page orintation Portrait or Landscape
 # dpi:  scan resolution e.g. 300
 ###
 def crop_resize(file, left=0, top=0, width=None, height=None, size="A4", ori="Portrait" , dpi=300):
-
-    wi, hei = pagesize[size][ori][dpi]
+    
+    if ori == "Portrait":
+        wi, hei = pagesize[size][ori][dpi]
+    if ori == "Landscape":
+        hei, wi = pagesize[size][ori][dpi]
     print(width, " " , height)
     with Image(filename=file) as image:
         w, h = image.size

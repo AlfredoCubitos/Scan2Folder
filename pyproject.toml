@@ -1,0 +1,26 @@
+[build-system]
+requires = ["uv_build >= 0.7.19, <0.9.0"]
+build-backend = "uv_build"
+
+[project]
+name = "Scan2Folder"
+version = "0.2.3"
+dependencies = [
+        "PyQt6",
+        "python-sane",
+        "bs4",
+        "lxml",
+        "Pillow",
+        "wand",
+        "pytesseract",
+        "numpy"
+    ]
+requires-python = ">= 3.13"
+authors = [{name = "Alfredo Cubitos"}]
+description = "Scan tool for HP MF Printers"
+readme = "README.md"
+keywords = ["scan button","scan tool","HP MFP","sane"]
+
+
+[project.urls]
+Homepage = "https://github.com/AlfredoCubitos/Scan2Folder"

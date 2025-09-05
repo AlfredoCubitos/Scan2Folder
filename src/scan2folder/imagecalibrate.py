@@ -1,14 +1,14 @@
 # This Python file uses the following encoding: utf-8
-import sys, io
-from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView
-from PyQt5 import uic
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt, QPoint, QRect, QPointF, QVariant, QMimeData, QSize, QIODevice
+import sys, io, os
+from PyQt6.QtWidgets import QWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView
+from PyQt6 import uic
+from PyQt6.QtGui import QPixmap, QImage
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot, QBuffer, Qt, QPoint, QRect, QPointF, QVariant, QMimeData, QSize, QIODevice
 from PIL import ImageEnhance, Image
 import numpy as np
 import cv2
 
-from rubberband import RubberBand
+from scan2folder.rubberband import RubberBand
 
 #from ui_configform import Ui_Form
 class GraphicsScene(QGraphicsScene):
@@ -70,7 +70,8 @@ class GraphicsScene(QGraphicsScene):
 class ConfigWindow(QWidget):
     def __init__(self,parent=None):
         super().__init__()
-        self.ui = uic.loadUi("configform.ui", self)
+        ui_file = os.path.join(os.path.dirname(__file__),"configform.ui")
+        self.ui = uic.loadUi(ui_file, self)
         #self.ui = Ui_Form()
         #self.ui.setupUi(self)
 
@@ -96,7 +97,7 @@ class ConfigWindow(QWidget):
 
         self.rubberBand = RubberBand(self.ui.view)
         #self.rubberBand.setMaximumSize(QSize(397,552))
-        self.ui.view.setRubberBandSelectionMode(Qt.IntersectsItemBoundingRect)
+        self.ui.view.setRubberBandSelectionMode(Qt.ItemSelectionMode.IntersectsItemBoundingRect)
         self.ui.view.rubberBandChanged.connect(self.getCropRect)
         self.rubberBand.cropSignal.connect(self.crop)
         self.rubberBand.sizeSignal.connect(self.setSize)
@@ -238,7 +239,7 @@ class ConfigWindow(QWidget):
         pass
         ## ensure that RubberBandDrag dragmode is set
         ## if not rubberBand will not work correctly
-        self.ui.view.setDragMode( QGraphicsView.RubberBandDrag)
+        self.ui.view.setDragMode( QGraphicsView.DragMode.RubberBandDrag)
 
     @pyqtSlot(QRect)
     def setSize(self,rect):

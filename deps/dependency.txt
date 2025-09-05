@@ -1,6 +1,6 @@
 ## requirement file for Scan2Folder
 
-PyQt5
+PyQt6
 python-sane
 bs4
 lxml
@@ -9,4 +9,3 @@ wand
 pytesseract
 numpy
 ocrtools
-

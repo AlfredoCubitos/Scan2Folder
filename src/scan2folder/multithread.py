@@ -1,4 +1,4 @@
-from PyQt5.QtCore import *
+from PyQt6.QtCore import *
 import time
 import traceback, sys
 

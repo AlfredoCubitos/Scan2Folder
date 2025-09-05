@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # This Python file uses the following encoding: utf-8
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter, QProgressDialog, QProgressBar
-from PyQt5 import uic
-from PyQt5.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QDialog, QFileDialog, QMessageBox, QCompleter, QProgressDialog, QProgressBar
+from PyQt6 import uic
+from PyQt6.QtCore import QProcess, QSettings, QThreadPool, pyqtSignal, pyqtSlot, Qt
+from PyQt6.QtGui import QPixmap, QImage
 
 import sys
 import time
@@ -14,16 +14,16 @@ import bs4
 import glob
 import os, io
 from PIL import ImageEnhance
-import ocrtools as ocrt
+import scan2folder.ocrtools as ocrt
 import tempfile
 
 
-from ui_dialog import Ui_Dialog
-from multithread import Worker, WorkerSignals
-from imagecalibrate import ConfigWindow
+from .ui_dialog import Ui_Dialog
+from .multithread import Worker, WorkerSignals
+from .imagecalibrate import ConfigWindow
 
 #from ui_mainwindow import Ui_MainWindow
-import resources
+import scan2folder.resources
 
 
 
@@ -47,8 +47,8 @@ class MainWindow(QMainWindow):
         self.compression = ['None','JPEG']
         self.scanFolder = os.getcwd()
         self.ver = sane.init()
-        
-        self.ui = uic.loadUi("mainwindow.ui", self)
+        ui_file = os.path.join(os.path.dirname(__file__),"mainwindow.ui")
+        self.ui = uic.loadUi(ui_file, self)
         #self.ui = Ui_MainWindow()
         #self.ui.setupUi(self)
         
@@ -316,7 +316,7 @@ class MainWindow(QMainWindow):
         for f in ff:
             files.append(os.path.basename(f).split('.')[0])
         completer = QCompleter(files)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive )
         self.ui.filename.setCompleter(completer)
 
 
@@ -490,6 +490,7 @@ class MainWindow(QMainWindow):
     def profileChanged(self):
         group = self.ui.cmbBoxOcr.currentText()
         self.getSettings(group)
+        self.settings.setValue('defaultGroup',group)
 
     @pyqtSlot()
     def leditcolor(self):
@@ -654,7 +655,7 @@ class MainWindow(QMainWindow):
 
     def ocr2pdf(self):
         fileDlg = QFileDialog(self)
-        fileDlg.setNameFilter("Images (*.png .jpg)")
+        fileDlg.setNameFilter("Images (*.png *.jpg)")
         fileDlg.setFileMode(QFileDialog.FileMode.ExistingFiles)
         fileDlg.setOption(QFileDialog.DontUseNativeDialog)
 

@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QRubberBand, QHBoxLayout, QVBoxLayout, QSizeGrip, QSplitter
-from PyQt5.QtCore import *
-from PyQt5.QtGui import QPainter, QBrush, QColor, QPalette, QIcon
+from PyQt6.QtWidgets import QWidget, QRubberBand, QHBoxLayout, QVBoxLayout, QSizeGrip, QSplitter
+from PyQt6.QtCore import *
+from PyQt6.QtGui import QPainter, QBrush, QColor, QPalette, QIcon
 ##
 # https://stackoverflow.com/questions/55307811/select-region-from-an-image-but-resizable-qrubberband-doesnt-resize
 ##
@@ -40,34 +40,34 @@ class RubberBand(QWidget):
 
         self.parent = parent
 
-        self.setWindowFlags(Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.SubWindow)
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
 
         top = QHBoxLayout()
         top.setContentsMargins(0, 0, 0, 0)
-        top.addWidget( QSizeGrip(self), 0, Qt.AlignLeft | Qt.AlignTop)
-        top.addWidget( HSizeGrip(self), 0, Qt.AlignHCenter | Qt.AlignTop)
-        top.addWidget( QSizeGrip(self), 0, Qt.AlignRight | Qt.AlignTop)
+        top.addWidget( QSizeGrip(self), 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        top.addWidget( HSizeGrip(self), 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        top.addWidget( QSizeGrip(self), 0, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
         layout.addLayout(top)
 
         center = QHBoxLayout()
         center.setContentsMargins(0, 0, 0, 0)
-        center.addWidget( VSizeGrip(self), 0, Qt.AlignLeft | Qt.AlignVCenter)
-        center.addWidget( VSizeGrip(self), 0, Qt.AlignRight | Qt.AlignVCenter)
+        center.addWidget( VSizeGrip(self), 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        center.addWidget( VSizeGrip(self), 0, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.addLayout(center)
 
         bottom = QHBoxLayout()
         bottom.setContentsMargins(0, 0, 0, 0)
-        bottom.addWidget( QSizeGrip(self), 0, Qt.AlignLeft | Qt.AlignBottom)
-        bottom.addWidget( HSizeGrip(self), 0, Qt.AlignHCenter | Qt.AlignBottom)
-        bottom.addWidget( QSizeGrip(self), 0, Qt.AlignRight | Qt.AlignBottom)
+        bottom.addWidget( QSizeGrip(self), 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBottom)
+        bottom.addWidget( HSizeGrip(self), 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        bottom.addWidget( QSizeGrip(self), 0, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
         layout.addLayout(bottom)
 
         self.setLayout(layout)
 
-        self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
+        self.rubberband = QRubberBand(QRubberBand.Shape.Rectangle, self)
         #self.rubberband.show()
 
         #self.show()

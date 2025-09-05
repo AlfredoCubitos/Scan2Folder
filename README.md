@@ -2,7 +2,7 @@
 
 ## Enabling the Scan-to-Folder button on HP MFP printers
 
-This is a **PytQt5** desktop app for rapidly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP)
+This is a **PytQt6** desktop app for rapidly scanning documents by using the Scan-to-Folder button on HP Multi Function Printers (MFP)
 especially CM Devices.
 
 This app uses the **Sane** backend to get all parameters needed.
@@ -36,8 +36,6 @@ You can define the crop size in the configuration dialog
 >*Note: In this version A4 page size for 300dpi is predifned.*
 If you want to change this, you can do it in ocrtools.py
 
-
-
 ### Usage
 
 1. Ensure that your scanner is reachable
@@ -63,22 +61,25 @@ On clicking the `Config/Calibrate` menu opens a window where you can scan a prev
 
 Install packages needed with:
 
->`sudo pip3 install -r deps/dependency.txt`
+>`pip install scan2folder`
+
+and run
+
+>`python3 -m scan2folder`
+
+
+or clone the repository, install all dependencies with:  
+>`sudo pip3 install -r deps/dependency.txt`  
+
+go to the `src` folder and run  
+>`python3 -m scan2folder`
 
 #### For OCR
 
 Install tesseract-ocr 4 with your language **and**  with Orientation & Script detection
 
 
-### Binary
-
-In the *bin* directory a `spec` file for `pyinstaller` is provided
-
-Calling `#> pyinstaller scan2folder.spec` creates a single executable binary for your environment
-
-Have a look at the [pyinstaller doc](https://pyinstaller.readthedocs.io) for more information
-
-### New Features
+### Features
 
 * creates PDF from local images
 * spec file for creating stand alone binaries
@@ -89,9 +90,6 @@ Have a look at the [pyinstaller doc](https://pyinstaller.readthedocs.io) for mor
 
 * The script is tested only with a HP CM1312 device
 * Only one (the first) scanner is usable
-* If the LED does not become green after the device is switched on, may be your device is not supported
-* If the LED becomes green and the button keeps yellow, the scanner is locked by another device/thread
+* If the LED does not turn green after the device is switched on, may be your device is not supported
+* If the LED does not turn green and the button keeps yellow, the scanner is locked by another device/thread
 
-### Thanks to
-
-Nicolas Bernaerts who inspired me with his [script](http://www.bernaerts-nicolas.fr/linux/74-ubuntu/264-ubuntu-hp-mfp-scanner-scantofolder)
